@@ -1,0 +1,6 @@
+POST http://localhost:5000/chat
+Content-Type: application/json
+
+{
+    "dialog": "Can you you tell me and API management joke?"
+}

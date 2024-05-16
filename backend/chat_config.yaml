@@ -1,0 +1,14 @@
+chat_approach:
+  system_prompt: |-
+                  You are a software developer fluent in all languages.
+  documents:
+    include: true
+    index_name: "workshop-data"
+    embedding_model: "text-embedding-ada-002"
+
+  openai_settings:
+    api_version: "2024-02-01"
+    deployment: "gpt-4-turbo"
+    temperature: 0.0
+    max_tokens: 800
+    n: 1

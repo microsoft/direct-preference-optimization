@@ -1,0 +1,93 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Backend: Launch & Attach server",
+            "type": "python",
+            "request": "launch",
+            "module": "flask",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "FLASK_APP": "backend/app.py",
+                "FLASK_ENV": "development",
+                "FLASK_DEBUG": "0"
+            },
+            "args": [
+                "run",
+                "--no-debugger",
+                "--no-reload",
+                "-p 5000"
+            ],
+            "envFile": "${input:dotEnvFilePath}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "preLaunchTask": "pip install dependencies"
+        },
+        {
+            "name": "Backend: Launch & Attach server (No Install)",
+            "type": "python",
+            "request": "launch",
+            "module": "flask",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "FLASK_APP": "backend/app.py",
+                "FLASK_ENV": "development",
+                "FLASK_DEBUG": "0"
+            },
+            "args": [
+                "run",
+                "--no-debugger",
+                "--no-reload",
+                "-p 5000"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Frontend: watch",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/frontend",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run-script",
+                "watch"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Frontend: build",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/frontend",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run-script",
+                "build"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Frontend: Launch UI From Edge",
+            "request": "launch",
+            "type": "msedge",
+            "url": "http://localhost:5000",
+            "sourceMaps": true,
+            "webRoot": "${workspaceFolder}/frontend/src",
+            "skipFiles": [
+                "node_modules"
+            ],
+            "preLaunchTask": "Frontend: Start"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "dotEnvFilePath",
+            "type": "command",
+            "command": "azure-dev.commands.getDotEnvFilePath"
+        }
+    ]
+}

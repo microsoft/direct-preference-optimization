@@ -1,0 +1,7 @@
+python-dotenv
+flask
+openai
+langchain
+langchain-openai
+azure-search-documents
+azure-identity
