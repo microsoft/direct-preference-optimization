@@ -1,7 +1,8 @@
 python-dotenv
-flask
+fastapi
 openai
 langchain
 langchain-openai
 azure-search-documents
 azure-identity
+uvicorn

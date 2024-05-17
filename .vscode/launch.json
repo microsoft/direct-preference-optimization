@@ -6,20 +6,17 @@
     "configurations": [
         {
             "name": "Backend: Launch & Attach server",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
-            "module": "flask",
-            "cwd": "${workspaceFolder}",
+            "module": "uvicorn",
+            "cwd": "${workspaceFolder}/backend",
             "env": {
-                "FLASK_APP": "backend/app.py",
-                "FLASK_ENV": "development",
-                "FLASK_DEBUG": "0"
             },
             "args": [
-                "run",
-                "--no-debugger",
-                "--no-reload",
-                "-p 5000"
+                "main:app",
+                "--reload",
+                "--port",
+                "5000"
             ],
             "envFile": "${input:dotEnvFilePath}",
             "console": "integratedTerminal",
@@ -28,20 +25,17 @@
         },
         {
             "name": "Backend: Launch & Attach server (No Install)",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
-            "module": "flask",
-            "cwd": "${workspaceFolder}",
+            "module": "uvicorn",
+            "cwd": "${workspaceFolder}/backend",
             "env": {
-                "FLASK_APP": "backend/app.py",
-                "FLASK_ENV": "development",
-                "FLASK_DEBUG": "0"
             },
             "args": [
-                "run",
-                "--no-debugger",
-                "--no-reload",
-                "-p 5000"
+                "main:app",
+                "--reload",
+                "--port",
+                "5000"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
