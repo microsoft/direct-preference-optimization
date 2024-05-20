@@ -28,6 +28,3 @@ def chat(chat_message: Chat):
     )
 
     return response.to_item()
-
-if __name__ == '__main__':
-    app.run(debug=True)

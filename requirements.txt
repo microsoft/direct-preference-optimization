@@ -3,6 +3,7 @@ fastapi
 openai
 langchain
 langchain-openai
+langchain-community
 azure-search-documents
 azure-identity
 uvicorn
