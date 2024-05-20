@@ -5,26 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Backend: Launch & Attach server",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvicorn",
-            "cwd": "${workspaceFolder}/backend",
-            "env": {
-            },
-            "args": [
-                "main:app",
-                "--reload",
-                "--port",
-                "5000"
-            ],
-            "envFile": "${input:dotEnvFilePath}",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "preLaunchTask": "pip install dependencies"
-        },
-        {
-            "name": "Backend: Launch & Attach server (No Install)",
+            "name": "Backend: run python",
             "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
@@ -39,18 +20,6 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": true
-        },
-        {
-            "name": "Frontend: watch",
-            "type": "node",
-            "request": "launch",
-            "cwd": "${workspaceFolder}/frontend",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": [
-                "run-script",
-                "watch"
-            ],
-            "console": "integratedTerminal"
         },
         {
             "name": "Frontend: build",
@@ -68,7 +37,7 @@
             "name": "Frontend: Launch UI From Edge",
             "request": "launch",
             "type": "msedge",
-            "url": "http://localhost:5000",
+            "url": "http://localhost:8081",
             "sourceMaps": true,
             "webRoot": "${workspaceFolder}/frontend/src",
             "skipFiles": [
