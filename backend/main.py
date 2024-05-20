@@ -48,7 +48,3 @@ def chat(chat_message: Chat):
     response = conversation.chat(system_prompt, chat_message.dialog)
 
     return response.to_item()
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
