@@ -1,4 +1,4 @@
-POST http://localhost:5000/chat
+POST http://localhost:8000/chat
 Content-Type: application/json
 
 {
