@@ -8,6 +8,7 @@ from models.vector_store_options import VectorStoreOptions
 from models.openai_options import OpenAIOptions
 
 class SearchVectorIndexService:
+    """Service class for searching the vector index."""
     def __init__(self, index_name: str, vector_store_options: VectorStoreOptions, open_ai_options: OpenAIOptions):
         embeddings = self._generate_embeddings(open_ai_options)
         self._vector_search_client = self._generate_azure_search_client(index_name, vector_store_options, embeddings)
@@ -15,6 +16,7 @@ class SearchVectorIndexService:
     def search(
         self, query: str, numberOfResults: int
     ) -> List[Tuple[Document, float, float]]:
+        # Search the vector index and return the documents with their scores and reranked values.
         documents = (
             self._vector_search_client.semantic_hybrid_search_with_score_and_rerank(
                 query=query, k=numberOfResults

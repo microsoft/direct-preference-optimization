@@ -17,6 +17,7 @@ from services.search_vector_index_service import SearchVectorIndexService
 
 
 class ChatConversation:
+    """Class used to manage the chat conversation and chain runnables together for the chat conversation"""
 
     def __init__(
             self,
@@ -31,27 +32,33 @@ class ChatConversation:
         self._open_ai_options = open_ai_options
 
 
-    def _get_gardening_documents(self, query: str):
+    def _get_primary_documents(self, query: str):
+        # Creating a new instance of the SearchVectorIndexService class with the primary index name.
         vector_index_client = SearchVectorIndexService(self._primary_index_name, self._vector_store_options, self._open_ai_options)
-
         return vector_index_client.search(query, 10)
 
 
-    def _get_aca_documents(self, query: str):
+    def _get_secondary_documents(self, query: str):
+        # Creating a new instance of the SearchVectorIndexService class with the secondary index name.
         vector_index_client = SearchVectorIndexService(self._secondary_index_name, self._vector_store_options, self._open_ai_options)
         return vector_index_client.search(query, 10)
 
 
     def _sort_and_filter_documents(self, _dict):
-        garden_documents = _dict["aca_documents"]
-        aca_documents = _dict["garden_documents"]
-        documents = garden_documents + aca_documents
+        # Function for filtering and sorting documents based on their reranked scores. Using LangChain this could be split out into
+        # multiple runnables for better readability and maintainability.
+        primary_documents = _dict["primary_documents"]
+        secondary_documents = _dict["secondary_documents"]
+        documents = primary_documents + secondary_documents
 
-        documents = [document for document in documents if document[2] >= 3]
+        # Reverse sorting the documents based on the reranked score.
         documents = sorted(documents, key=lambda document: document[2], reverse=True)
-        documents = documents[:5]
+        documents = documents[:3]
 
         return documents
+
+    def _format_docs(self, docs):
+        return "\n\n".join([d[0].page_content for d in docs])
 
     def chat(self, system_prompt: str, prompt: str) -> ChatResponse:
         model = AzureChatOpenAI(
@@ -64,6 +71,7 @@ class ChatConversation:
             n=self._open_ai_options.n,
         )
 
+        # Creating a chat template with a system message and a human message. Both messages are passed as templates.
         chat_template = ChatPromptTemplate.from_messages(
             [
                 SystemMessagePromptTemplate.from_template(
@@ -73,19 +81,23 @@ class ChatConversation:
             ]
         )
         
+        # Creating a chain of runnables that will fill the context variable in the template. Initially, this chain
+        # will get primary index documents and append the secondary index documents to the list. Then, it will sort and filter. 
         chain = (
             {
                 "context": {
-                    "garden_documents": itemgetter("question")
-                    | RunnableLambda(self._get_gardening_documents),
-                    "aca_documents": itemgetter("question") | RunnableLambda(self._get_aca_documents),
+                    "primary_documents": itemgetter("question")
+                    | RunnableLambda(self._get_primary_documents),
+                    "secondary_documents": itemgetter("question") | RunnableLambda(self._get_secondary_documents),
                 }
-                | RunnableLambda(self._sort_and_filter_documents),
+                | RunnableLambda(self._sort_and_filter_documents)
+                | self._format_docs,
                 "question": RunnablePassthrough(),
             }
             | chat_template
             | model
         )
+
         answer = chain.invoke({"question": prompt})
         chat_answer = Answer(formatted_answer=answer.content)
 
