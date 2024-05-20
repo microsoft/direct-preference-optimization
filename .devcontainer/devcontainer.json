@@ -1,0 +1,38 @@
+{
+	"image": "mcr.microsoft.com/devcontainers/universal:2",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"ms-python.pylint",
+				"ms-toolsai.jupyter",
+				"GitHub.copilot",
+				"ms-dotnettools.dotnet-interactive-vscode",
+				"bierner.markdown-preview-github-styles",
+				"dbaeumer.vscode-eslint",
+				"msjsdiag.vscode-react-native",
+				"esbenp.prettier-vscode",
+				"Azurite.azurite",
+				"MS-CST-E.vscode-devskim",
+				"ms-azuretools.azure-dev",
+				"ms-azuretools.vscode-cosmosdb",
+				"ms-azuretools.vscode-azurecontainerapps"
+			]
+		}
+	},
+	"postCreateCommand": "npm build && pip install -r requirements.txt",
+	"secrets": {
+		"AZURE_SEARCH_ENDPOINT": {
+			"description": "Azure AI Search endpoint"
+		},
+		"AZURE_AI_SEARCH_API_KEY": {
+			"description": "Azure AI Search API key"
+		},
+		"AZURE_OPENAI_ENDPOINT": {
+			"description": "Azure OpenAI endpoint"
+		},
+		"AZURE_OPENAI_API_KEY": {
+			"description": "Azure OpenAI API key"
+		}
+	}
+}
