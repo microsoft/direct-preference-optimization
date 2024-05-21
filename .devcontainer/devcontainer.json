@@ -34,5 +34,20 @@
 		"AZURE_OPENAI_API_KEY": {
 			"description": "Azure OpenAI API key"
 		}
+	},
+	"forwardPorts": [
+		5000, 8081
+	],
+	"portsAttributes": {
+		"5000": {
+			"label": "Backend",
+			"onAutoForward": "notify",
+			"protocol": "https"
+		},
+		"8081": {
+			"label": "Frontend",
+			"onAutoForward": "openBrowser",
+			"protocol": "https"
+		}
 	}
 }
