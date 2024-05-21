@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Backend: run python",
+            "name": "Backend",
             "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
@@ -17,10 +17,11 @@
                 "--reload",
             ],
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
+            "preLaunchTask": "pip install dependencies"
         },
         {
-            "name": "Frontend: build",
+            "name": "Frontend",
             "type": "node",
             "request": "launch",
             "cwd": "${workspaceFolder}/frontend",
@@ -32,7 +33,7 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Frontend: Launch UI From Edge",
+            "name": "Frontend: Launch",
             "request": "launch",
             "type": "msedge",
             "url": "http://localhost:8081",
@@ -49,6 +50,12 @@
             "id": "dotEnvFilePath",
             "type": "command",
             "command": "azure-dev.commands.getDotEnvFilePath"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Backend/Frontend",
+            "configurations": ["Backend", "Frontend: Launch"]
         }
     ]
 }

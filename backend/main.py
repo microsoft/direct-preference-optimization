@@ -1,4 +1,4 @@
-# import os
+import os
 import yaml
 
 from fastapi import FastAPI

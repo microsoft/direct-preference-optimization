@@ -15,7 +15,7 @@
             "script": "dev",
             "path": "frontend",
             "problemMatcher": [],
-            "label": "npm: dev - frontend",
+            "label": "Frontend: Start",
             "detail": "vite --port 8081"
         }
     ],
