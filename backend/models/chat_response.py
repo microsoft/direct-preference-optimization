@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import List, Optional
 
+
 class ApproachType(Enum):
     structured = "1"
     unstructured = "2"
@@ -36,28 +37,30 @@ class ChatResponse:
         self,
         answer: Answer,
         classification: Optional[ApproachType] = None,
-        data_points: List[str] = [],
+        data_points: List[str] = None,
         error: Optional[str] = None,
         suggested_classification: Optional[ApproachType] = None,
         show_retry: bool = False,
     ):
         self.answer = answer
         self.classification = classification
-        self.data_points = data_points
+        self.data_points = [] if data_points is None else data_points
         self.error = error
         self.suggested_classification = suggested_classification
         self.show_retry = show_retry
 
     def to_item(self):
         return {
-            "classification": self.classification.name
-            if self.classification is not None
-            else None,
+            "classification": (
+                self.classification.name if self.classification is not None else None
+            ),
             "answer": self.answer.to_item(),
             "data_points": [str(data_point) for data_point in self.data_points],
             "error": self.error,
-            "suggested_classification": self.suggested_classification.value
-            if self.suggested_classification is not None
-            else None,
+            "suggested_classification": (
+                self.suggested_classification.value
+                if self.suggested_classification is not None
+                else None
+            ),
             "show_retry": self.show_retry,
         }
