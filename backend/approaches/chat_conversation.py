@@ -1,82 +1,104 @@
 from textwrap import dedent
+from operator import itemgetter
 
 from langchain_openai import AzureChatOpenAI
-from langchain_core.messages import ( HumanMessage, SystemMessage)
-from models.chat_response import ChatResponse
-from langchain_openai.embeddings import AzureOpenAIEmbeddings
-from langchain_community.vectorstores.azuresearch import AzureSearch
-from models.chat_response import Answer
+from langchain_core.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    SystemMessagePromptTemplate,
+)
+from langchain_core.runnables import (RunnablePassthrough, RunnableLambda)
 
-class ChatConversation():
+from models.chat_response import Answer
+from models.chat_response import ChatResponse
+from models.vector_store_options import VectorStoreOptions
+from models.openai_options import OpenAIOptions
+from services.search_vector_index_service import SearchVectorIndexService
+
+
+class ChatConversation:
+    """Class used to manage the chat conversation and chain runnables together for the chat conversation"""
 
     def __init__(
-            self, 
-            azure_openai_endpoint: str,
-            azure_openai_api_key: str,
-            azure_search_endpoint: str = None,
-            azure_search_key: str = None,
-    ):
-        self.__azure_openai_endpoint = azure_openai_endpoint
-        self.__azure_openai_api_key = azure_openai_api_key
-        self.__azure_search_endpoint = azure_search_endpoint
-        self.__azure_search_key = azure_search_key
+            self,
+            primary_index_name: str,
+            secondary_index_name: str,
+            vector_store_options: VectorStoreOptions,
+            open_ai_options: OpenAIOptions
+        ):
+        self._primary_index_name = primary_index_name
+        self._secondary_index_name = secondary_index_name
+        self._vector_store_options = vector_store_options
+        self._open_ai_options = open_ai_options
 
-    def chat(self, chat_config, prompt: str) -> ChatResponse:
-        openai_api_version = chat_config["chat_approach"]["openai_settings"]["api_version"]
-        openai_deployment = chat_config["chat_approach"]["openai_settings"]["deployment"]
-        openai_temperature = chat_config["chat_approach"]["openai_settings"]["temperature"]
-        openai_max_tokens = chat_config["chat_approach"]["openai_settings"]["max_tokens"]
-        openai_n = chat_config["chat_approach"]["openai_settings"]["n"]
 
+    def _get_primary_documents(self, query: str):
+        # Creating a new instance of the SearchVectorIndexService class with the primary index name.
+        vector_index_client = SearchVectorIndexService(self._primary_index_name, self._vector_store_options, self._open_ai_options)
+        return vector_index_client.search(query, 10)
+
+
+    def _get_secondary_documents(self, query: str):
+        # Creating a new instance of the SearchVectorIndexService class with the secondary index name.
+        vector_index_client = SearchVectorIndexService(self._secondary_index_name, self._vector_store_options, self._open_ai_options)
+        return vector_index_client.search(query, 10)
+
+
+    def _sort_and_filter_documents(self, _dict):
+        # Function for filtering and sorting documents based on their reranked scores. Using LangChain this could be split out into
+        # multiple runnables for better readability and maintainability.
+        primary_documents = _dict["primary_documents"]
+        secondary_documents = _dict["secondary_documents"]
+        documents = primary_documents + secondary_documents
+
+        # Reverse sorting the documents based on the reranked score.
+        documents = sorted(documents, key=lambda document: document[2], reverse=True)
+        documents = documents[:3]
+
+        return documents
+
+    def _format_docs(self, docs):
+        return "\n\n".join([d[0].page_content for d in docs])
+
+    def chat(self, system_prompt: str, prompt: str) -> ChatResponse:
         model = AzureChatOpenAI(
-            openai_api_version=openai_api_version,
-            azure_deployment=openai_deployment,
-            azure_endpoint=self.__azure_openai_endpoint,
-            api_key=self.__azure_openai_api_key,
-            temperature=openai_temperature,
-            max_tokens=openai_max_tokens,
-            n=openai_n
+            openai_api_version=self._open_ai_options.api_version,
+            azure_deployment=self._open_ai_options.deployment_model,
+            azure_endpoint=self._open_ai_options.endpoint,
+            api_key=self._open_ai_options.api_key,
+            temperature=self._open_ai_options.temperature,
+            max_tokens=self._open_ai_options.max_tokens,
+            n=self._open_ai_options.n,
+        )
+
+        # Creating a chat template with a system message and a human message. Both messages are passed as templates.
+        chat_template = ChatPromptTemplate.from_messages(
+            [
+                SystemMessagePromptTemplate.from_template(
+                    dedent(system_prompt)
+                ),
+                HumanMessagePromptTemplate.from_template("{question}"),
+            ]
         )
         
-        system_prompt = dedent(chat_config["chat_approach"]["system_prompt"])
-        
-        if chat_config["chat_approach"]["documents"]["include"]:
-            vector_store = self.generate_search(chat_config, openai_api_version)
-            documents = vector_store.similarity_search(
-            query=prompt,
-                k=3,
-                search_type="similarity",
-            )
+        # Creating a chain of runnables that will fill the context variable in the template. Initially, this chain
+        # will get primary index documents and append the secondary index documents to the list. Then, it will sort and filter. 
+        chain = (
+            {
+                "context": {
+                    "primary_documents": itemgetter("question")
+                    | RunnableLambda(self._get_primary_documents),
+                    "secondary_documents": itemgetter("question") | RunnableLambda(self._get_secondary_documents),
+                }
+                | RunnableLambda(self._sort_and_filter_documents)
+                | self._format_docs,
+                "question": RunnablePassthrough(),
+            }
+            | chat_template
+            | model
+        )
 
-            if documents is not None and len(documents) > 0:
-                system_prompt = "\nAdditional information:\n"
-                
-                for document in documents:
-                    system_prompt += f"{document.page_content}\n"
-
-        system_message = SystemMessage(content=dedent(system_prompt))
-
-        message = HumanMessage(content=prompt)
-        answer = model.invoke([system_message, message])
+        answer = chain.invoke({"question": prompt})
         chat_answer = Answer(formatted_answer=answer.content)
 
         return ChatResponse(answer=chat_answer)
-    
-    def generate_search(self, chat_config, openai_api_version) -> AzureSearch:
-        azure_search_endpoint = self.__azure_search_endpoint
-        azure_search_key = self.__azure_search_key
-        index_name = chat_config["chat_approach"]["documents"]["index_name"]
-        model = chat_config["chat_approach"]["documents"]["embedding_model"]
-        embeddings: AzureOpenAIEmbeddings = AzureOpenAIEmbeddings(
-            openai_api_key=self.__azure_openai_api_key, 
-            openai_api_version=openai_api_version, 
-            azure_endpoint=self.__azure_openai_endpoint,
-            model=model
-        )
-        
-        return AzureSearch(
-            azure_search_endpoint=azure_search_endpoint,
-            azure_search_key=azure_search_key,
-            index_name=index_name,
-            embedding_function=embeddings.embed_query
-        )

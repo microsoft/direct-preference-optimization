@@ -1,14 +1,16 @@
 chat_approach:
   system_prompt: |-
-                  You are a software developer fluent in all languages.
+                  Answer the question based only on the following context. If you do not have any context do not answer the question:
+                  {context}
   documents:
-    include: true
-    index_name: "workshop-data"
-    embedding_model: "text-embedding-ada-002"
+    primary_index_name: "aca-data"
+    secondary_index_name: "garden-data"
+    semantic_configuration_name: "payload_scoring"
 
   openai_settings:
     api_version: "2024-02-01"
     deployment: "gpt-4-turbo"
+    embedding_model: "text-embedding-ada-002"
     temperature: 0.0
     max_tokens: 800
     n: 1

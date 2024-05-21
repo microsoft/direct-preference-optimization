@@ -15,8 +15,6 @@
             "args": [
                 "main:app",
                 "--reload",
-                "--port",
-                "5000"
             ],
             "envFile": "${input:dotEnvFilePath}",
             "console": "integratedTerminal",
@@ -34,8 +32,6 @@
             "args": [
                 "main:app",
                 "--reload",
-                "--port",
-                "5000"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -68,7 +64,7 @@
             "name": "Frontend: Launch UI From Edge",
             "request": "launch",
             "type": "msedge",
-            "url": "http://localhost:5000",
+            "url": "http://localhost:8000",
             "sourceMaps": true,
             "webRoot": "${workspaceFolder}/frontend/src",
             "skipFiles": [
