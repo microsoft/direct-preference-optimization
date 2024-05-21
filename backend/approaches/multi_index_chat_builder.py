@@ -12,7 +12,7 @@ from models.vector_store_options import VectorStoreOptions
 from models.openai_options import OpenAIOptions
 from services.search_vector_index_service import SearchVectorIndexService
 
-class ChatBuilder:
+class MultiIndexChatBuilder:
     """Class used to help build a dynamic chat conversation."""
     def __init__(
             self,

@@ -9,7 +9,7 @@ load_dotenv(override=True, dotenv_path=f"{os.getcwd()}/.env")
 from models.chat_request import Chat
 from models.vector_store_options import VectorStoreOptions
 from models.openai_options import OpenAIOptions
-from approaches.chat_builder import ChatBuilder
+from approaches.multi_index_chat_builder import MultiIndexChatBuilder
 from approaches.chat_conversation import ChatConversation
 
 app = FastAPI()
@@ -40,7 +40,7 @@ def chat(chat_message: Chat):
         chat_config["chat_approach"]["openai_settings"]["n"]
     )
     
-    chat_builder = ChatBuilder(
+    chat_builder = MultiIndexChatBuilder(
         primary_index_name,
         secondary_index_name,
         vector_store_options,

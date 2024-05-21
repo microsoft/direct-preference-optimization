@@ -6,7 +6,7 @@ from langchain_core.runnables import (RunnablePassthrough, RunnableLambda)
 
 from models.chat_response import Answer
 from models.chat_response import ChatResponse
-from approaches.chat_builder import ChatBuilder
+from approaches.multi_index_chat_builder import MultiIndexChatBuilder
 
 class ChatConversation:
     """ Class used to manage the chat conversation and chain runnables together for 
@@ -15,7 +15,7 @@ class ChatConversation:
             self,
             system_prompt: str,
             default_return_message: str,
-            builder: ChatBuilder
+            builder: MultiIndexChatBuilder
         ):
         self._system_prompt = system_prompt
         self._default_return_message = default_return_message
