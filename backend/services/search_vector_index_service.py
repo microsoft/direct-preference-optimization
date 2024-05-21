@@ -1,3 +1,5 @@
+"""Service class for searching the vector index."""
+
 from typing import List, Tuple
 
 from langchain_community.vectorstores.azuresearch import AzureSearch
@@ -7,25 +9,11 @@ from langchain_core.documents import Document
 from models.vector_store_options import VectorStoreOptions
 from models.openai_options import OpenAIOptions
 
-class SearchVectorIndexService:
-    """Service class for searching the vector index."""
-    def __init__(self, index_name: str, vector_store_options: VectorStoreOptions, open_ai_options: OpenAIOptions):
-        embeddings = self._generate_embeddings(open_ai_options)
-        self._vector_search_client = self._generate_azure_search_client(index_name, vector_store_options, embeddings)
+class SearchVectorIndexServiceFactory:
+    """Factory class for generating the Azure OpenAI embeddings and Azure Search client."""
 
-    def search(
-        self, query: str, numberOfResults: int
-    ) -> List[Tuple[Document, float, float]]:
-        # Search the vector index and return the documents with their scores and reranked values.
-        documents = (
-            self._vector_search_client.semantic_hybrid_search_with_score_and_rerank(
-                query=query, k=numberOfResults
-            )
-        )
-
-        return documents
-
-    def _generate_embeddings(self, open_ai_options: OpenAIOptions) -> AzureOpenAIEmbeddings:
+    def generate_embeddings(self, open_ai_options: OpenAIOptions) -> AzureOpenAIEmbeddings:
+        """Generate the Azure OpenAI embeddings."""
         return AzureOpenAIEmbeddings(
             openai_api_key=open_ai_options.api_key,
             openai_api_version=open_ai_options.api_version,
@@ -33,7 +21,11 @@ class SearchVectorIndexService:
             model=open_ai_options.embedding_model,
         )
 
-    def _generate_azure_search_client(self, index_name: str, vector_store_options: VectorStoreOptions, embedding_function: List[float]) -> AzureSearch:
+    def generate_azure_search_client(self,
+                                      index_name: str,
+                                      vector_store_options: VectorStoreOptions,
+                                      embedding_function: List[float]) -> AzureSearch:
+        """Generate the Azure Search client."""
         return AzureSearch(
             azure_search_endpoint=vector_store_options.endpoint,
             azure_search_key=vector_store_options.key,
@@ -41,3 +33,14 @@ class SearchVectorIndexService:
             embedding_function=embedding_function,
             semantic_configuration_name=vector_store_options.semantic_configuration_name,
         )
+
+def search(
+    client: AzureSearch,
+    query: str, number_of_results: int
+) -> List[Tuple[Document, float, float]]:
+    """Search the vector index and return the document scores / reranked values."""
+    return (
+        client.semantic_hybrid_search_with_score_and_rerank(
+            query=query, k=number_of_results
+        )
+    )

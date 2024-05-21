@@ -24,18 +24,6 @@
         },
         {
             "name": "Frontend",
-            "type": "node",
-            "request": "launch",
-            "cwd": "${workspaceFolder}/frontend",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": [
-                "run-script",
-                "build"
-            ],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Frontend: Launch",
             "request": "launch",
             "type": "msedge",
             "url": "http://localhost:8081",
@@ -44,7 +32,7 @@
             "skipFiles": [
                 "node_modules"
             ],
-            "preLaunchTask": "Frontend: Start"
+            "preLaunchTask": "Frontend: Start",
         }
     ],
     "inputs": [
@@ -57,7 +45,8 @@
     "compounds": [
         {
             "name": "Backend/Frontend",
-            "configurations": ["Backend", "Frontend: Launch"]
+            "configurations": ["Backend", "Frontend"],
+            "stopAll": true
         }
     ]
 }

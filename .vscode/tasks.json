@@ -16,7 +16,7 @@
             "path": "frontend",
             "problemMatcher": [],
             "label": "Frontend: Start",
-            "detail": "vite --port 8081"
+            "detail": "vite --port 8081 && tsc --watch"
         }
     ],
     "inputs": [
