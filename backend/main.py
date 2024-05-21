@@ -9,6 +9,7 @@ load_dotenv(override=True, dotenv_path=f"{os.getcwd()}/.env")
 from models.chat_request import Chat
 from models.vector_store_options import VectorStoreOptions
 from models.openai_options import OpenAIOptions
+from approaches.multi_index_chat_builder import MultiIndexChatBuilder
 from approaches.chat_conversation import ChatConversation
 
 app = FastAPI()
@@ -18,6 +19,7 @@ app = FastAPI()
 def chat(chat_message: Chat):
     """API endpoint for chat conversation."""
     chat_config = yaml.safe_load(open("chat_config.yaml", "r"))
+    default_return_message = chat_config["chat_approach"]["default_return_message"]
     system_prompt = chat_config["chat_approach"]["system_prompt"]
     primary_index_name = chat_config["chat_approach"]["documents"]["primary_index_name"]
     secondary_index_name = chat_config["chat_approach"]["documents"]["secondary_index_name"]
@@ -30,7 +32,7 @@ def chat(chat_message: Chat):
     openai_options = OpenAIOptions(
         os.environ["AZURE_OPENAI_ENDPOINT"],
         os.environ["AZURE_OPENAI_API_KEY"],
-         chat_config["chat_approach"]["openai_settings"]["api_version" ],
+        chat_config["chat_approach"]["openai_settings"]["api_version" ],
         chat_config["chat_approach"]["openai_settings"]["deployment"],
         chat_config["chat_approach"]["openai_settings"]["embedding_model"],
         chat_config["chat_approach"]["openai_settings"]["temperature"],
@@ -38,13 +40,19 @@ def chat(chat_message: Chat):
         chat_config["chat_approach"]["openai_settings"]["n"]
     )
     
-    conversation = ChatConversation(
+    chat_builder = MultiIndexChatBuilder(
         primary_index_name,
         secondary_index_name,
         vector_store_options,
         openai_options
     )
 
-    response = conversation.chat(system_prompt, chat_message.dialog)
+    conversation = ChatConversation(
+        system_prompt,
+        default_return_message,
+        chat_builder
+    )
+
+    response = conversation.chat(chat_message.dialog)
 
     return response.to_item()
