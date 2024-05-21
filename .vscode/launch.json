@@ -37,6 +37,18 @@
             "justMyCode": true
         },
         {
+            "name": "Frontend: dev",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/frontend",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run-script",
+                "dev"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Frontend: watch",
             "type": "node",
             "request": "launch",
@@ -71,6 +83,13 @@
                 "node_modules"
             ],
             "preLaunchTask": "Frontend: Start"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Frontend/Backend",
+            "configurations": ["Backend: Launch & Attach server (No Install)", "Frontend: dev"],
+            "stopAll": true
         }
     ],
     "inputs": [
