@@ -32,7 +32,14 @@
             "skipFiles": [
                 "node_modules"
             ],
-            "preLaunchTask": "Frontend: Start",
+            "preLaunchTask": "Frontend: Start"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Frontend/Backend",
+            "configurations": ["Backend: Launch & Attach server (No Install)", "Frontend: dev"],
+            "stopAll": true
         }
     ],
     "inputs": [
