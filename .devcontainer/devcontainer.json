@@ -20,7 +20,7 @@
 			]
 		}
 	},
-	"postCreateCommand": "npm install --prefix frontend && pip install -r requirements.txt",
+	"postCreateCommand": "npm install --prefix frontend && pip install -r ./tests/backend/requirements.txt",
 	"secrets": {
 		"AZURE_SEARCH_ENDPOINT": {
 			"description": "Azure AI Search endpoint"
