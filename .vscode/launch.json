@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Backend: Launch & Attach server",
+            "name": "Backend",
             "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
@@ -14,69 +14,19 @@
             },
             "args": [
                 "main:app",
+                "--port",
+                "5000",
                 "--reload",
             ],
-            "envFile": "${input:dotEnvFilePath}",
             "console": "integratedTerminal",
             "justMyCode": true,
             "preLaunchTask": "pip install dependencies"
         },
         {
-            "name": "Backend: Launch & Attach server (No Install)",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvicorn",
-            "cwd": "${workspaceFolder}/backend",
-            "env": {
-            },
-            "args": [
-                "main:app",
-                "--reload",
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-        {
-            "name": "Frontend: dev",
-            "type": "node",
-            "request": "launch",
-            "cwd": "${workspaceFolder}/frontend",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": [
-                "run-script",
-                "dev"
-            ],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Frontend: watch",
-            "type": "node",
-            "request": "launch",
-            "cwd": "${workspaceFolder}/frontend",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": [
-                "run-script",
-                "watch"
-            ],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Frontend: build",
-            "type": "node",
-            "request": "launch",
-            "cwd": "${workspaceFolder}/frontend",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": [
-                "run-script",
-                "build"
-            ],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Frontend: Launch UI From Edge",
+            "name": "Frontend",
             "request": "launch",
             "type": "msedge",
-            "url": "http://localhost:8000",
+            "url": "http://localhost:8081",
             "sourceMaps": true,
             "webRoot": "${workspaceFolder}/frontend/src",
             "skipFiles": [
@@ -97,6 +47,13 @@
             "id": "dotEnvFilePath",
             "type": "command",
             "command": "azure-dev.commands.getDotEnvFilePath"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Backend/Frontend",
+            "configurations": ["Backend", "Frontend"],
+            "stopAll": true
         }
     ]
 }
