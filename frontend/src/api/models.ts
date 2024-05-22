@@ -19,10 +19,14 @@ export type ChatRequestOverrides = {
     vectorSearch?: boolean;
 };
 
-interface DialogRequest {
+export interface DialogRequest {
     userID: string;
     conversationID: string;
     dialogID: string;
+}
+
+export interface RateRequest extends DialogRequest {
+    rating?: boolean | undefined;
 }
 
 export interface ChatRequest extends DialogRequest {
@@ -35,6 +39,11 @@ export type Answer = {
     query_generation_prompt?: string;
     query?: string;
     query_result?: string;
+};
+
+export type RateResponse = {
+    error?: string;
+    dialog_id: string;
 };
 
 export type ChatResponse = {

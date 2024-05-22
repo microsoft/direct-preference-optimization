@@ -4,37 +4,53 @@ import DOMPurify from "dompurify";
 
 import styles from "./Answer.module.css";
 
-import { ChatResponse, getCitationFilePath } from "../../api";
+import { ChatResponse, DialogRequest, getCitationFilePath, rateApi } from "../../api";
 import { parseAnswerToHtml } from "./AnswerParser";
 import { AnswerIcon } from "./AnswerIcon";
+import { AnswerRating } from "./AnswerRating";
 import { ErrorCircle20Regular } from "@fluentui/react-icons";
 
 interface Props {
     chatResponse: ChatResponse;
     isSelected?: boolean;
+    rating?: boolean | undefined;
     onCitationClicked: (filePath: string) => void;
     onThoughtProcessClicked: () => void;
     onSupportingContentClicked: () => void;
     onFollowupQuestionClicked?: (question: string) => void;
     showFollowupQuestions?: boolean;
     onRetryClicked?: () => void;
+    onRating?: (value: boolean | undefined) => void
     retryable: boolean;
+    dialogInfo: DialogRequest;
 }
 
 export const Answer = ({
     chatResponse,
     isSelected,
+    rating,
     onCitationClicked,
     onThoughtProcessClicked,
     onSupportingContentClicked,
     onFollowupQuestionClicked,
     showFollowupQuestions,
     onRetryClicked,
-    retryable
+    onRating,
+    retryable,
+    dialogInfo
 }: Props) => {
     const parsedAnswer = useMemo(() => parseAnswerToHtml(chatResponse, onCitationClicked), [chatResponse]);
     const sanitizedAnswerHtml = DOMPurify.sanitize(parsedAnswer.answerHtml);
-
+    const answer = chatResponse.answer;
+    onRating = onRating || (() => { });
+    const rate = (value: boolean | undefined) => {
+        rateApi({
+            userID: dialogInfo.userID,
+            conversationID: dialogInfo.conversationID,
+            dialogID: dialogInfo.dialogID,
+            rating: value
+        }).then(() => onRating(value));
+    }
     return (
         <Stack className={`${styles.answerContainer} ${isSelected && styles.selected}`} verticalAlign="space-between">
             <Stack.Item>
@@ -47,12 +63,7 @@ export const Answer = ({
                             title="Show thought process"
                             ariaLabel="Show thought process"
                             onClick={() => onThoughtProcessClicked()}
-                            disabled={
-                                !chatResponse.classification &&
-                                !chatResponse.answer.query &&
-                                !chatResponse.answer.query_generation_prompt &&
-                                !chatResponse.answer.query_result
-                            }
+                            disabled={!chatResponse.classification && !answer.query && !answer.query_generation_prompt && !answer.query_result}
                         />
                         <IconButton
                             style={{ color: "black" }}
@@ -77,6 +88,10 @@ export const Answer = ({
                         <PrimaryButton className={styles.retryButton} onClick={onRetryClicked} text="Retry" />
                     </div>
                 )}
+            </Stack.Item>
+
+            <Stack.Item>
+                <AnswerRating onRating={() => rate(rating)} rating={rating} />
             </Stack.Item>
 
             {!!parsedAnswer.citations.length && (
