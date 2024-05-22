@@ -5,7 +5,7 @@ import yaml
 
 from fastapi import FastAPI
 from dotenv import load_dotenv
-from models.chat_request import Chat
+from models.chat_request import ChatRequest
 from models.chat_response import to_response_item
 from models.vector_store_options import VectorStoreOptions
 from models.openai_options import OpenAIOptions, ModelOptions, ApiOptions
@@ -25,7 +25,7 @@ environ = os.environ
 app = FastAPI()
 
 @app.post("/chat")
-def conversation(chat_message: Chat):
+def conversation(chat_message: ChatRequest):
     """API endpoint for chat conversation."""
     vector_store_options = VectorStoreOptions(
         environ["AZURE_SEARCH_ENDPOINT"],

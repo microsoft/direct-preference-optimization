@@ -16,9 +16,9 @@ class ChatConversationOptions:
 
 def _route(options: ChatConversationOptions,
     builder: MultiIndexChatBuilder,
-    info):
+    context_info: dict):
     """Route the conversation based on the context variable."""
-    if not info["context"]:
+    if not context_info["context"]:
         return builder.default_return_message(options.default_return_message)
 
     # Creating a chat template with a system message and a human message.
@@ -50,7 +50,10 @@ def _build_chain(builder: MultiIndexChatBuilder, chat_options: ChatConversationO
         RunnableLambda(builder.get_secondary_documents),
         RunnableLambda(builder.sort_and_filter_documents)
         | builder.format_docs
-    ) | RunnableLambda(lambda info: _route(chat_options, builder, info))
+    ) | RunnableLambda(lambda info: _route(
+        options = chat_options,
+        builder = builder,
+        context_info = info))
 
 def chat(
     builder: MultiIndexChatBuilder,
