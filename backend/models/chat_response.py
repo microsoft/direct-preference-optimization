@@ -73,7 +73,9 @@ class ChatResponse:
     ):
         self.answer = answer
         self.classification = chat_response_args.classification
-        self.data_points = [] if chat_response_args.data_points is None else chat_response_args.data_points
+        self.data_points = ([]
+            if chat_response_args.data_points is None
+            else chat_response_args.data_points)
         self.error = chat_response_args.error
         self.suggested_classification = chat_response_args.suggested_classification
         self.show_retry = show_retry
@@ -84,7 +86,7 @@ def to_response_item(response: ChatResponse):
         "classification": (
             response.classification.name if response.classification is not None else None
         ),
-        "answer": response.answer.to_item(),
+        "answer": to_answer_item(response.answer),
         "data_points": [str(data_point) for data_point in response.data_points],
         "error": response.error,
         "suggested_classification": (

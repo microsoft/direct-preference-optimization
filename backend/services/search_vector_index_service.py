@@ -11,11 +11,13 @@ from models.openai_options import OpenAIOptions
 
 def generate_embeddings(open_ai_options: OpenAIOptions) -> AzureOpenAIEmbeddings:
     """Generate the Azure OpenAI embeddings."""
+    api_options = open_ai_options.api_options
+    model_options = open_ai_options.model_options
     return AzureOpenAIEmbeddings(
-        openai_api_key=open_ai_options.api_key,
-        openai_api_version=open_ai_options.api_version,
-        azure_endpoint=open_ai_options.endpoint,
-        model=open_ai_options.embedding_model,
+        openai_api_key=api_options.api_key,
+        openai_api_version=api_options.api_version,
+        azure_endpoint=api_options.endpoint,
+        model=model_options.embedding_model,
     )
 
 def generate_azure_search_client(
@@ -36,8 +38,5 @@ def search(
     query: str, number_of_results: int
 ) -> List[Tuple[Document, float, float]]:
     """Search the vector index and return the document scores / reranked values."""
-    return (
-        client.semantic_hybrid_search_with_score_and_rerank(
-            query=query, k=number_of_results
-        )
-    )
+    return client.semantic_hybrid_search_with_score_and_rerank(
+        query=query, k=number_of_results)

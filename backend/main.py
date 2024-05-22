@@ -6,35 +6,34 @@ import yaml
 from fastapi import FastAPI
 from dotenv import load_dotenv
 from models.chat_request import Chat
+from models.chat_response import to_response_item
 from models.vector_store_options import VectorStoreOptions
 from models.openai_options import OpenAIOptions, ModelOptions, ApiOptions
 from approaches.multi_index_chat_builder import MultiIndexChatBuilder
 from approaches.chat_conversation import ChatConversationOptions, chat
-from models.chat_response import to_response_item
 
 load_dotenv(override=True, dotenv_path=f"{os.getcwd()}/.env")
-
+with open("chat_config.yaml", "r", encoding="utf-8") as file:
+    chat_config = yaml.safe_load(file)
+chat_approach = chat_config["chat_approach"]
+default_return_message = chat_approach["default_return_message"]
+system_prompt = chat_approach["system_prompt"]
+documents = chat_approach["documents"]
+primary_index_name = documents["primary_index_name"]
+secondary_index_name = documents["secondary_index_name"]
+environ = os.environ
 app = FastAPI()
-@app.post("/chat")
 
+@app.post("/chat")
 def conversation(chat_message: Chat):
     """API endpoint for chat conversation."""
-    with open("chat_config.yaml", "r", encoding="utf-8") as file:
-        chat_config = yaml.safe_load(file)
-    chat_approach = chat_config["chat_approach"]
-    default_return_message = chat_approach["default_return_message"]
-    system_prompt = chat_approach["system_prompt"]
-    documents = chat_approach["documents"]
-    primary_index_name = documents["primary_index_name"]
-    secondary_index_name = documents["secondary_index_name"]
     vector_store_options = VectorStoreOptions(
-        os.environ["AZURE_SEARCH_ENDPOINT"],
-        os.environ["AZURE_AI_SEARCH_API_KEY"],
+        environ["AZURE_SEARCH_ENDPOINT"],
+        environ["AZURE_AI_SEARCH_API_KEY"],
         documents["semantic_configuration_name"],
     )
 
     openai_settings = chat_approach["openai_settings"]
-    environ = os.environ
     openai_options = OpenAIOptions(
         api_options = ApiOptions(
             endpoint = environ["AZURE_OPENAI_ENDPOINT"],
@@ -61,6 +60,9 @@ def conversation(chat_message: Chat):
         openai_options
     )
 
-    response = chat(builder=chat_builder, chat_options=chat_options, prompt=chat_message.dialog)
+    response = chat(
+        builder=chat_builder,
+        chat_options=chat_options,
+        prompt=chat_message.dialog)
 
     return to_response_item(response)

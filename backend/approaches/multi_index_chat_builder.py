@@ -13,7 +13,7 @@ from langchain_core.prompts import (
 
 from models.vector_store_options import VectorStoreOptions
 from models.openai_options import OpenAIOptions
-from services.search_vector_index_service import search, generate_azure_search_client
+from services.search_vector_index_service import search, generate_azure_search_client, generate_embeddings
 
 class MultiIndexChatBuilder:
     """Class used to help build a dynamic chat conversation."""
@@ -32,13 +32,13 @@ class MultiIndexChatBuilder:
     def llm(self):
         """Creates and returns an instance of a LLM class."""
         return AzureChatOpenAI(
-            openai_api_version=self._open_ai_options.api_version,
-            azure_deployment=self._open_ai_options.deployment_model,
-            azure_endpoint=self._open_ai_options.endpoint,
-            api_key=self._open_ai_options.api_key,
-            temperature=self._open_ai_options.temperature,
-            max_tokens=self._open_ai_options.max_tokens,
-            n=self._open_ai_options.n,
+            openai_api_version=self._open_ai_options.api_options.api_version,
+            azure_deployment=self._open_ai_options.model_options.deployment_model,
+            azure_endpoint=self._open_ai_options.api_options.endpoint,
+            api_key=self._open_ai_options.api_options.api_key,
+            temperature=self._open_ai_options.model_options.temperature,
+            max_tokens=self._open_ai_options.model_options.max_tokens,
+            n=self._open_ai_options.model_options.n,
         )
 
     def chat_template(self, system_prompt):
@@ -55,19 +55,21 @@ class MultiIndexChatBuilder:
     def get_primary_documents(self, query: str):
         """ Creating a new instance of the SearchVectorIndexService class with the 
             primary index name."""
+        embedding = generate_embeddings(self._open_ai_options)
         client = generate_azure_search_client(
-            self._primary_index_name,
-            self._vector_store_options,
-            self._open_ai_options)
+            index_name = self._primary_index_name,
+            vector_store_options = self._vector_store_options,
+            embedding_function = embedding)
         return search(client, query, 10)
 
     def get_secondary_documents(self, query: str):
         """ Creating a new instance of the SearchVectorIndexService class with the 
             secondary index name."""
+        embedding = generate_embeddings(self._open_ai_options)
         client = generate_azure_search_client(
-            self._secondary_index_name,
-            self._vector_store_options,
-            self._open_ai_options)
+            index_name = self._secondary_index_name,
+            vector_store_options = self._vector_store_options,
+            embedding_function = embedding)
         return search(client, query, 10)
 
     def sort_and_filter_documents(self, _dict):

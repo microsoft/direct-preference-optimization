@@ -3,8 +3,8 @@ import dataclasses
 
 from operator import itemgetter
 from langchain_core.runnables import (RunnablePassthrough, RunnableLambda)
-from models.chat_response import Answer
-from models.chat_response import ChatResponse
+from models.chat_response import Answer, AnswerQueryConfig
+from models.chat_response import ChatResponse, ChatResponseArgs
 from approaches.multi_index_chat_builder import MultiIndexChatBuilder
 
 @dataclasses.dataclass
@@ -62,5 +62,16 @@ def chat(
         Then, it will sort and filter."""
     chain = _build_chain(builder, chat_options)
     answer = chain.invoke({"question": prompt})
-    chat_answer = Answer(formatted_answer=answer.content)
-    return ChatResponse(answer=chat_answer)
+    chat_answer = Answer(
+        formatted_answer = answer.content,
+        answer_query_config = AnswerQueryConfig(
+            query=prompt,
+            query_generation_prompt = None,
+            query_result = None))
+    chat_response_args = ChatResponseArgs(
+        classification = None,
+        data_points = None,
+        error = None,
+        suggested_classification = None
+    )
+    return ChatResponse(answer=chat_answer, chat_response_args=chat_response_args)
