@@ -7,24 +7,26 @@ from fastapi import FastAPI
 from dotenv import load_dotenv
 from models.chat_request import Chat
 from models.vector_store_options import VectorStoreOptions
-from models.openai_options import OpenAIOptions
+from models.openai_options import OpenAIOptions, ModelOptions, ApiOptions
 from approaches.multi_index_chat_builder import MultiIndexChatBuilder
-from approaches.chat_conversation import ChatConversation
+from approaches.chat_conversation import ChatConversationOptions, chat
+from models.chat_response import to_response_item
 
 load_dotenv(override=True, dotenv_path=f"{os.getcwd()}/.env")
 
 app = FastAPI()
 @app.post("/chat")
 
-def chat(chat_message: Chat):
+def conversation(chat_message: Chat):
     """API endpoint for chat conversation."""
     with open("chat_config.yaml", "r", encoding="utf-8") as file:
         chat_config = yaml.safe_load(file)
     chat_approach = chat_config["chat_approach"]
     default_return_message = chat_approach["default_return_message"]
-    system_prompt = chat_config["chat_approach"]["system_prompt"]
-    primary_index_name = chat_config["chat_approach"]["documents"]["primary_index_name"]
-    secondary_index_name = chat_config["chat_approach"]["documents"]["secondary_index_name"]
+    system_prompt = chat_approach["system_prompt"]
+    documents = chat_approach["documents"]
+    primary_index_name = documents["primary_index_name"]
+    secondary_index_name = documents["secondary_index_name"]
     vector_store_options = VectorStoreOptions(
         os.environ["AZURE_SEARCH_ENDPOINT"],
         os.environ["AZURE_AI_SEARCH_API_KEY"],
@@ -32,17 +34,26 @@ def chat(chat_message: Chat):
     )
 
     openai_settings = chat_approach["openai_settings"]
+    environ = os.environ
     openai_options = OpenAIOptions(
-        os.environ["AZURE_OPENAI_ENDPOINT"],
-        os.environ["AZURE_OPENAI_API_KEY"],
-        openai_settings["api_version" ],
-        openai_settings["deployment"],
-        openai_settings["embedding_model"],
-        openai_settings["temperature"],
-        openai_settings["max_tokens"],
-        openai_settings["n"]
+        api_options = ApiOptions(
+            endpoint = environ["AZURE_OPENAI_ENDPOINT"],
+            api_key = environ["AZURE_OPENAI_API_KEY"],
+            api_version = openai_settings["api_version"]),
+        model_options = ModelOptions(
+            deployment_model = openai_settings["deployment"],
+            embedding_model = openai_settings["embedding_model"],
+            temperature = openai_settings["temperature"],
+            max_tokens = openai_settings["max_tokens"],
+            n = openai_settings["n"]
+        )
     )
-    
+
+    chat_options = ChatConversationOptions(
+        system_prompt,
+        default_return_message
+    )
+
     chat_builder = MultiIndexChatBuilder(
         primary_index_name,
         secondary_index_name,
@@ -50,12 +61,6 @@ def chat(chat_message: Chat):
         openai_options
     )
 
-    conversation = ChatConversation(
-        system_prompt,
-        default_return_message,
-        chat_builder
-    )
+    response = chat(builder=chat_builder, chat_options=chat_options, prompt=chat_message.dialog)
 
-    response = conversation.chat(chat_message.dialog)
-
-    return response.to_item()
+    return to_response_item(response)
