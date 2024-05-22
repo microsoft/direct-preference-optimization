@@ -10,17 +10,17 @@ export class ChatResponseError extends Error {
     }
 }
 
-export async function rateApi(options: RateRequest): Promise<RateResponse> {
+export async function rateApi(request: RateRequest): Promise<RateResponse> {
     const response = await fetch("/rate", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            user_id: options.userID,
-            conversation_id: options.conversationID,
-            dialog_id: options.dialogID,
-            rating: options.rating
+            user_id: request.userID,
+            conversation_id: request.conversationID,
+            dialog_id: request.dialogID,
+            rating: request.rating
         })
     });
 
