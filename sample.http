@@ -2,5 +2,15 @@ POST http://localhost:8000/chat
 Content-Type: application/json
 
 {
-    "dialog": "Can you you tell me and API management joke?"
-}
+    "user_id":"",
+    "conversation_id":"42a4a3c4-4c2e-48dc-add9-3f1b6aec2f97",
+    "dialog_id":"7e40728b-cf3d-44a4-bef2-7ae7c08042a2",
+    "dialog":"Tell me a joke about API Management.",
+    "overrides":{
+        "semantic_ranker":true,
+        "semantic_captions":false,
+        "top":20,
+        "suggest_followup_questions":false,
+        "vector_search":true
+        }
+    }
