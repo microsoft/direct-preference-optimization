@@ -48,7 +48,8 @@ export const Answer = ({
             userID: dialogInfo.userID,
             conversationID: dialogInfo.conversationID,
             dialogID: dialogInfo.dialogID,
-            rating: value
+            rating: value,
+            response: answer.formatted_answer
         }).then(() => onRating(value));
     }
     const shouldNotShowThoughtProcess = !chatResponse.classification
