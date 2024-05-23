@@ -197,6 +197,11 @@ const Chat = ({ }: Props) => {
                                     <UserChatMessage message={answer[0]} />
                                     <div className={styles.chatMessageGpt}>
                                         <Answer
+                                            dialogInfo={{
+                                                userID: selectedUser?.user_id || "",
+                                                conversationID: conversationID || "",
+                                                dialogID: crypto.randomUUID()
+                                            }}
                                             key={index}
                                             chatResponse={answer[1]}
                                             isSelected={selectedAnswer === index && activeAnalysisPanelTab !== undefined}

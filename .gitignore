@@ -1,3 +1,6 @@
+# App specifics
+.vite/
+
 # Azure az webapp deployment details
 .azure
 *_env

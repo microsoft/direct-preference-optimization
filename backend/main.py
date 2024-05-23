@@ -5,6 +5,7 @@ import yaml
 
 from fastapi import FastAPI
 from dotenv import load_dotenv
+from models.rate_request import RateRequest
 from models.chat_request import ChatRequest
 from models.chat_response import to_response_item
 from models.vector_store_options import VectorStoreOptions
@@ -23,6 +24,11 @@ primary_index_name = documents["primary_index_name"]
 secondary_index_name = documents["secondary_index_name"]
 environ = os.environ
 app = FastAPI()
+
+@app.post("/rate")
+def rate(rate_message: RateRequest):
+    """API endpoint for rating the conversation."""
+    return {"message": "Rating received."}
 
 @app.post("/chat")
 def conversation(chat_message: ChatRequest):

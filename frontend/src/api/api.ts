@@ -1,4 +1,4 @@
-import { ChatRequest, ChatResponse, RoleType, SearchSettings, UserProfile } from "./models";
+import { RateRequest, RateResponse, ChatRequest, ChatResponse, RoleType, SearchSettings, UserProfile } from "./models";
 
 export class ChatResponseError extends Error {
     public retryable: boolean;
@@ -8,6 +8,29 @@ export class ChatResponseError extends Error {
         this.message = message;
         this.retryable = retryable;
     }
+}
+
+export async function rateApi(request: RateRequest): Promise<RateResponse> {
+    const response = await fetch("/rate", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            user_id: request.userID,
+            conversation_id: request.conversationID,
+            dialog_id: request.dialogID,
+            rating: request.rating
+        })
+    });
+
+    const parsedResponse: RateResponse = await response.json();
+    if (response.status > 299 || !response.ok) {
+        throw new Error(parsedResponse.error ?? "An unknown error occurred.");
+    }
+
+    return parsedResponse;
+
 }
 
 export async function chatApi(options: ChatRequest): Promise<ChatResponse> {

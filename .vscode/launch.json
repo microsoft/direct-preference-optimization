@@ -33,13 +33,6 @@
             "preLaunchTask": "Frontend: Start"
         }
     ],
-    "compounds": [
-        {
-            "name": "Frontend/Backend",
-            "configurations": ["Backend: Launch & Attach server (No Install)", "Frontend: dev"],
-            "stopAll": true
-        }
-    ],
     "inputs": [
         {
             "id": "dotEnvFilePath",
