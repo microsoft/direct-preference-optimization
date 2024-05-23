@@ -51,6 +51,10 @@ export const Answer = ({
             rating: value
         }).then(() => onRating(value));
     }
+    const shouldNotShowThoughtProcess = !chatResponse.classification
+        && !answer.query
+        && !answer.query_generation_prompt
+        && !answer.query_result;
     return (
         <Stack className={`${styles.answerContainer} ${isSelected && styles.selected}`} verticalAlign="space-between">
             <Stack.Item>
@@ -63,7 +67,7 @@ export const Answer = ({
                             title="Show thought process"
                             ariaLabel="Show thought process"
                             onClick={() => onThoughtProcessClicked()}
-                            disabled={!chatResponse.classification && !answer.query && !answer.query_generation_prompt && !answer.query_result}
+                            disabled={shouldNotShowThoughtProcess}
                         />
                         <IconButton
                             style={{ color: "black" }}
