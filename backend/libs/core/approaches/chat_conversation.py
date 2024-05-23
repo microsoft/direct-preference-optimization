@@ -1,13 +1,10 @@
 """Conversation logic for AI Chatbot."""
-import dataclasses
-
+from dataclasses import dataclass
 from operator import itemgetter
 from langchain_core.runnables import (RunnablePassthrough, RunnableLambda)
-from models.chat_response import Answer, AnswerQueryConfig
-from models.chat_response import ChatResponse, ChatResponseArgs
-from approaches.multi_index_chat_builder import MultiIndexChatBuilder
+from libs.core.approaches.multi_index_chat_builder import MultiIndexChatBuilder
 
-@dataclasses.dataclass
+@dataclass
 class ChatConversationOptions:
     """Class used to manage the chat conversation
         and chain runnables together for the chat conversation"""
@@ -43,7 +40,9 @@ def _get_context(
         "question": RunnablePassthrough(),
     })
 
-def _build_chain(builder: MultiIndexChatBuilder, chat_options: ChatConversationOptions):
+def build_chain(
+    builder: MultiIndexChatBuilder,
+    chat_options: ChatConversationOptions):
     """Building the chain of runnables for the chat conversation."""
     return _get_context(
         RunnableLambda(builder.get_primary_documents),
@@ -54,27 +53,3 @@ def _build_chain(builder: MultiIndexChatBuilder, chat_options: ChatConversationO
         options = chat_options,
         builder = builder,
         context_info = info))
-
-def chat(
-    builder: MultiIndexChatBuilder,
-    chat_options: ChatConversationOptions,
-    prompt: str) -> ChatResponse:
-    """ Creating a chain of runnables that will fill the context variable
-        in the template. Initially, this chain will get primary index
-        documents and append the secondary index documents to the list.
-        Then, it will sort and filter."""
-    chain = _build_chain(builder, chat_options)
-    answer = chain.invoke({"question": prompt})
-    chat_answer = Answer(
-        formatted_answer = answer.content,
-        answer_query_config = AnswerQueryConfig(
-            query=prompt,
-            query_generation_prompt = None,
-            query_result = None))
-    chat_response_args = ChatResponseArgs(
-        classification = None,
-        data_points = None,
-        error = None,
-        suggested_classification = None
-    )
-    return ChatResponse(answer=chat_answer, chat_response_args=chat_response_args)

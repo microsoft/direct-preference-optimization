@@ -6,7 +6,7 @@ import types
 from langchain_core.documents import Document
 from langchain_community.vectorstores.azuresearch import AzureSearch
 import pytest
-from services.search_vector_index_service import search
+from libs.core.services.search_vector_index_service import search
 
 @pytest.fixture(name="setup")
 def setup_fixture():
