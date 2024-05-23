@@ -8,6 +8,7 @@ from langchain_core.documents import Document
 
 from libs.core.models.vector_store_options import VectorStoreOptions
 from libs.core.models.openai_options import OpenAIOptions
+from models.rate_models import RateResponse, RateRequest
 
 def generate_embeddings(open_ai_options: OpenAIOptions) -> AzureOpenAIEmbeddings:
     """Generate the Azure OpenAI embeddings."""
@@ -40,3 +41,21 @@ def search(
     """Search the vector index and return the document scores / reranked values."""
     return client.semantic_hybrid_search_with_score_and_rerank(
         query=query, k=number_of_results)
+
+def rate(
+    client: AzureSearch,
+    rate_request: RateRequest) -> dict:
+    """Rate the conversation."""
+    output = client.add_texts(
+        texts=[rate_request.response],
+        labels=[{
+            True: "rating:thumbs-up",
+            False: "rating:thumbs-down",
+            None: "rating:none"}
+            [rate_request.rating]],
+        metadata={"rating": rate_request.rating})
+
+    return RateResponse(
+        dialog_id = rate_request.dialog_id,
+        output = output
+    )

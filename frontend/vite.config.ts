@@ -11,7 +11,8 @@ export default defineConfig({
     },
     server: {
         proxy: {
-            "/chat": "http://localhost:8000"
+            "/chat": "http://localhost:8000",
+            "/rate": "http://localhost:8000"
         }
     }
 });

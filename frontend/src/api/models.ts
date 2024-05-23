@@ -27,6 +27,7 @@ export interface DialogRequest {
 
 export interface RateRequest extends DialogRequest {
     rating?: boolean | undefined;
+    response: string;
 }
 
 export interface ChatRequest extends DialogRequest {
@@ -44,6 +45,7 @@ export type Answer = {
 export type RateResponse = {
     error?: string;
     dialog_id: string;
+    output: string[];
 };
 
 export type ChatResponse = {

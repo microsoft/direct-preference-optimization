@@ -95,7 +95,7 @@ export const Answer = ({
             </Stack.Item>
 
             <Stack.Item>
-                <AnswerRating onRating={() => rate(rating)} rating={rating} />
+                <AnswerRating onRating={(value) => rate(value)} rating={rating} />
             </Stack.Item>
 
             {!!parsedAnswer.citations.length && (
