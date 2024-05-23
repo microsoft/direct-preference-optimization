@@ -6,6 +6,7 @@ class RateRequest(BaseModel):
     """Model for the rate request."""
     dialog_id: str
     rating: bool | None
+    request: str
     response: str
 
 class RateResponse(BaseModel):

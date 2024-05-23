@@ -80,7 +80,10 @@ def rate_response(rate_message: RateRequest):
     )
     response = rate(
         client = client,
-        rate_request = rate_message
+        dialog_id = rate_message.dialog_id,
+        rating = rate_message.rating,
+        request = rate_message.request,
+        response = rate_message.response
     )
     return response
 
