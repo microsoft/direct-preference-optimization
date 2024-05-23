@@ -11,9 +11,13 @@ from langchain_core.prompts import (
     SystemMessagePromptTemplate,
 )
 
-from models.vector_store_options import VectorStoreOptions
-from models.openai_options import OpenAIOptions
-from services.search_vector_index_service import search, generate_azure_search_client, generate_embeddings
+from libs.core.models.vector_store_options import VectorStoreOptions
+from libs.core.models.openai_options import OpenAIOptions
+from libs.core.services.search_vector_index_service import (
+    search,
+    generate_azure_search_client,
+    generate_embeddings
+)
 
 class MultiIndexChatBuilder:
     """Class used to help build a dynamic chat conversation."""
@@ -31,14 +35,17 @@ class MultiIndexChatBuilder:
 
     def llm(self):
         """Creates and returns an instance of a LLM class."""
+        open_ai_options = self._open_ai_options
+        api_options = open_ai_options.api_options
+        model_options = open_ai_options.model_options
         return AzureChatOpenAI(
-            openai_api_version=self._open_ai_options.api_options.api_version,
-            azure_deployment=self._open_ai_options.model_options.deployment_model,
-            azure_endpoint=self._open_ai_options.api_options.endpoint,
-            api_key=self._open_ai_options.api_options.api_key,
-            temperature=self._open_ai_options.model_options.temperature,
-            max_tokens=self._open_ai_options.model_options.max_tokens,
-            n=self._open_ai_options.model_options.n,
+            openai_api_version=api_options.api_version,
+            azure_deployment=model_options.deployment_model,
+            azure_endpoint=api_options.endpoint,
+            api_key=api_options.api_key,
+            temperature=model_options.temperature,
+            max_tokens=model_options.max_tokens,
+            n=model_options.n,
         )
 
     def chat_template(self, system_prompt):
@@ -52,25 +59,23 @@ class MultiIndexChatBuilder:
             ]
         )
 
-    def get_primary_documents(self, query: str):
-        """ Creating a new instance of the SearchVectorIndexService class with the 
-            primary index name."""
+    def _get_documents(self, index_name: str, query: str):
         embedding = generate_embeddings(self._open_ai_options)
         client = generate_azure_search_client(
-            index_name = self._primary_index_name,
+            index_name = index_name,
             vector_store_options = self._vector_store_options,
             embedding_function = embedding)
         return search(client, query, 10)
 
+    def get_primary_documents(self, query: str):
+        """ Creating a new instance of the SearchVectorIndexService class with the 
+            primary index name."""
+        return self._get_documents(self._primary_index_name, query)
+
     def get_secondary_documents(self, query: str):
         """ Creating a new instance of the SearchVectorIndexService class with the 
             secondary index name."""
-        embedding = generate_embeddings(self._open_ai_options)
-        client = generate_azure_search_client(
-            index_name = self._secondary_index_name,
-            vector_store_options = self._vector_store_options,
-            embedding_function = embedding)
-        return search(client, query, 10)
+        return self._get_documents(self._secondary_index_name, query)
 
     def sort_and_filter_documents(self, _dict):
         """ Function for filtering and sorting documents based on their reranked scores.

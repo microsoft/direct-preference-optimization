@@ -47,7 +47,7 @@
 		"8081": {
 			"label": "Frontend",
 			"onAutoForward": "openBrowser",
-			"protocol": "https"
+			"protocol": "http"
 		}
 	}
 }
