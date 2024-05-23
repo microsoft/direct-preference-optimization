@@ -14,8 +14,6 @@
             },
             "args": [
                 "main:app",
-                "--port",
-                "5000",
                 "--reload",
             ],
             "console": "integratedTerminal",
