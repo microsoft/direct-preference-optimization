@@ -40,3 +40,24 @@ def search(
     """Search the vector index and return the document scores / reranked values."""
     return client.semantic_hybrid_search_with_score_and_rerank(
         query=query, k=number_of_results)
+
+def rate(
+    client: AzureSearch,
+    dialog_id: str,
+    rating: bool | None,
+    request: str,
+    response: str) -> dict:
+    """Rate the conversation."""
+    output = client.add_texts(
+        texts=[request, response],
+        labels=[{
+            True: "rating:thumbs-up",
+            False: "rating:thumbs-down",
+            None: "rating:none"}
+            [rating]],
+        metadata={"rating": rating, "response": response})
+
+    return {
+        "dialog_id": dialog_id,
+        "output": output
+    }

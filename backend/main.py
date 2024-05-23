@@ -5,7 +5,7 @@ import yaml
 
 from fastapi import FastAPI
 from dotenv import load_dotenv
-from models.rate_request import RateRequest
+from models.rate_models import RateRequest
 from models.chat_request import ChatRequest
 from models.chat_response import (
     Answer,
@@ -18,6 +18,11 @@ from libs.core.models.vector_store_options import VectorStoreOptions
 from libs.core.models.openai_options import OpenAIOptions, ModelOptions, ApiOptions
 from libs.core.approaches.multi_index_chat_builder import MultiIndexChatBuilder
 from libs.core.approaches.chat_conversation import ChatConversationOptions, build_chain
+from libs.core.services.search_vector_index_service import (
+    generate_embeddings,
+    generate_azure_search_client,
+    rate
+)
 
 load_dotenv(override=True, dotenv_path=f"{os.getcwd()}/.env")
 with open("chat_config.yaml", "r", encoding="utf-8") as file:
@@ -65,9 +70,22 @@ chat_builder = MultiIndexChatBuilder(
 app = FastAPI()
 
 @app.post("/rate")
-def rate(rate_message: RateRequest):
+def rate_response(rate_message: RateRequest):
     """API endpoint for rating the conversation."""
-    return {"message": "Rating received."}
+    embeddings = generate_embeddings(openai_options)
+    client = generate_azure_search_client(
+        index_name="ratings",
+        vector_store_options=vector_store_options,
+        embedding_function=embeddings,
+    )
+    response = rate(
+        client = client,
+        dialog_id = rate_message.dialog_id,
+        rating = rate_message.rating,
+        request = rate_message.request,
+        response = rate_message.response
+    )
+    return response
 
 @app.post("/chat")
 def conversation(chat_message: ChatRequest):

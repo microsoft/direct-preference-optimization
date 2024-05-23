@@ -48,7 +48,8 @@ export const Answer = ({
             userID: dialogInfo.userID,
             conversationID: dialogInfo.conversationID,
             dialogID: dialogInfo.dialogID,
-            rating: value
+            rating: value,
+            response: answer.formatted_answer
         }).then(() => onRating(value));
     }
     const shouldNotShowThoughtProcess = !chatResponse.classification
@@ -95,7 +96,7 @@ export const Answer = ({
             </Stack.Item>
 
             <Stack.Item>
-                <AnswerRating onRating={() => rate(rating)} rating={rating} />
+                <AnswerRating onRating={(value) => rate(value)} rating={rating} />
             </Stack.Item>
 
             {!!parsedAnswer.citations.length && (

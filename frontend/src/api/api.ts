@@ -20,11 +20,14 @@ export async function rateApi(request: RateRequest): Promise<RateResponse> {
             user_id: request.userID,
             conversation_id: request.conversationID,
             dialog_id: request.dialogID,
-            rating: request.rating
+            rating: request.rating || null,
+            response: request.response ?? "no response"
         })
     });
 
-    const parsedResponse: RateResponse = await response.json();
+    const json = await response.json();
+    console.log("response", request, json);
+    const parsedResponse: RateResponse = json;
     if (response.status > 299 || !response.ok) {
         throw new Error(parsedResponse.error ?? "An unknown error occurred.");
     }
@@ -33,41 +36,43 @@ export async function rateApi(request: RateRequest): Promise<RateResponse> {
 
 }
 
-export async function chatApi(options: ChatRequest): Promise<ChatResponse> {
+export async function chatApi(request: ChatRequest): Promise<ChatResponse> {
+    const overrides = request.overrides;
     const response = await fetch("/chat", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            user_id: options.userID,
-            conversation_id: options.conversationID,
-            dialog_id: options.dialogID,
-            dialog: options.dialog,
+            user_id: request.userID,
+            conversation_id: request.conversationID,
+            dialog_id: request.dialogID,
+            dialog: request.dialog,
             overrides: {
-                semantic_ranker: options.overrides?.semanticRanker,
-                semantic_captions: options.overrides?.semanticCaptions,
-                top: options.overrides?.top,
-                temperature: options.overrides?.temperature,
-                exclude_category: options.overrides?.excludeCategory,
-                suggest_followup_questions: options.overrides?.suggestFollowupQuestions,
-                classification_override: options.overrides?.classificationOverride,
-                vector_search: options.overrides?.vectorSearch
+                semantic_ranker: overrides?.semanticRanker,
+                semantic_captions: overrides?.semanticCaptions,
+                top: overrides?.top,
+                temperature: overrides?.temperature,
+                exclude_category: overrides?.excludeCategory,
+                suggest_followup_questions: overrides?.suggestFollowupQuestions,
+                classification_override: overrides?.classificationOverride,
+                vector_search: overrides?.vectorSearch
             }
         })
     });
 
     const parsedResponse: ChatResponse = await response.json();
     if (response.status > 299 || !response.ok) {
-        throw new ChatResponseError(parsedResponse.error ?? "An unknown error occurred.", parsedResponse.show_retry ?? false);
+        throw new ChatResponseError(
+            parsedResponse.error ?? "An unknown error occurred.",
+            parsedResponse.show_retry ?? false);
     }
 
     return parsedResponse;
 }
 
 export async function getSearchSettings(): Promise<SearchSettings> {
-    const searchSettings: SearchSettings = {vectorization_enabled: true};
-    return searchSettings;
+    return {vectorization_enabled: true};
 }
 
 export function getCitationFilePath(citation: string): string {
