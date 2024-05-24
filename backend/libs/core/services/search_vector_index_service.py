@@ -35,11 +35,13 @@ def generate_azure_search_client(
 
 def search(
     client: AzureSearch,
-    query: str, number_of_results: int
+    query: str, 
+    number_of_results: int,
+    filters: str | None = None
 ) -> List[Tuple[Document, float, float]]:
     """Search the vector index and return the document scores / reranked values."""
     return client.semantic_hybrid_search_with_score_and_rerank(
-        query=query, k=number_of_results)
+        query=query, k=number_of_results, filters=filters)
 
 def rate(
     client: AzureSearch,
@@ -49,13 +51,17 @@ def rate(
     response: str) -> dict:
     """Rate the conversation."""
     output = client.add_texts(
-        texts=[request, response],
-        labels=[{
-            True: "rating:thumbs-up",
-            False: "rating:thumbs-down",
-            None: "rating:none"}
-            [rating]],
-        metadata={"rating": rating, "response": response})
+        texts=[request],
+        metadatas=[{
+                "response": response,
+                "labels": [{
+                    True: "rating:thumbs-up",
+                    False: "rating:thumbs-down",
+                    None: "rating:none"}
+                    [rating]
+                ]
+        }]
+    )
 
     return {
         "dialog_id": dialog_id,
