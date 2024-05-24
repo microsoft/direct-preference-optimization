@@ -95,9 +95,10 @@ def conversation(chat_message: ChatRequest):
         chat_options=chat_options
     )
 
-    answer = chain.invoke({"question": chat_message.dialog})
+    response = chain.invoke({"question": chat_message.dialog})
     chat_answer = Answer(
-        formatted_answer = answer.content,
+        formatted_answer = response["answer"].content,
+        citations = response["filtered_docs"],
         answer_query_config = AnswerQueryConfig(
             query=chat_message.dialog,
             query_generation_prompt = None,
