@@ -67,7 +67,8 @@ chat_builder = MultiIndexChatBuilder(
     primary_index_name,
     secondary_index_name,
     vector_store_options,
-    openai_options
+    openai_options,
+    storage_account_options
 )
 
 app = FastAPI()
