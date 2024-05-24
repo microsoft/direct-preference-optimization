@@ -1,4 +1,4 @@
-import { ChatRequest, ChatResponse, RoleType, SearchSettings, UserProfile } from "./models";
+import { RateRequest, RateResponse, ChatRequest, ChatResponse, RoleType, SearchSettings, UserProfile } from "./models";
 
 export class ChatResponseError extends Error {
     public retryable: boolean;
@@ -10,26 +10,53 @@ export class ChatResponseError extends Error {
     }
 }
 
-export async function chatApi(options: ChatRequest): Promise<ChatResponse> {
+export async function rateApi(request: RateRequest): Promise<RateResponse> {
+    const response = await fetch("/rate", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            user_id: request.userID,
+            conversation_id: request.conversationID,
+            dialog_id: request.dialogID,
+            rating: request.rating || null,
+            request: request.request ?? "no request",
+            response: request.response ?? "no response"
+        })
+    });
+
+    const json = await response.json();
+    console.log("response", request, json);
+    const parsedResponse: RateResponse = json;
+    if (response.status > 299 || !response.ok) {
+        throw new Error(parsedResponse.error ?? "An unknown error occurred.");
+    }
+
+    return parsedResponse;
+}
+
+export async function chatApi(request: ChatRequest): Promise<ChatResponse> {
+    const overrides = request.overrides;
     const response = await fetch("/chat", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            user_id: options.userID,
-            conversation_id: options.conversationID,
-            dialog_id: options.dialogID,
-            dialog: options.dialog,
+            user_id: request.userID,
+            conversation_id: request.conversationID,
+            dialog_id: request.dialogID,
+            dialog: request.dialog,
             overrides: {
-                semantic_ranker: options.overrides?.semanticRanker,
-                semantic_captions: options.overrides?.semanticCaptions,
-                top: options.overrides?.top,
-                temperature: options.overrides?.temperature,
-                exclude_category: options.overrides?.excludeCategory,
-                suggest_followup_questions: options.overrides?.suggestFollowupQuestions,
-                classification_override: options.overrides?.classificationOverride,
-                vector_search: options.overrides?.vectorSearch
+                semantic_ranker: overrides?.semanticRanker,
+                semantic_captions: overrides?.semanticCaptions,
+                top: overrides?.top,
+                temperature: overrides?.temperature,
+                exclude_category: overrides?.excludeCategory,
+                suggest_followup_questions: overrides?.suggestFollowupQuestions,
+                classification_override: overrides?.classificationOverride,
+                vector_search: overrides?.vectorSearch
             }
         })
     });
@@ -43,8 +70,7 @@ export async function chatApi(options: ChatRequest): Promise<ChatResponse> {
 }
 
 export async function getSearchSettings(): Promise<SearchSettings> {
-    const searchSettings: SearchSettings = {vectorization_enabled: true};
-    return searchSettings;
+    return { vectorization_enabled: true };
 }
 
 export function getCitationFilePath(citation: string): string {

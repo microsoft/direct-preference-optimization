@@ -10,9 +10,9 @@ export default defineConfig({
         sourcemap: true
     },
     server: {
-        port: 5000,
         proxy: {
-            "/chat": "http://localhost:5000"
+            "/chat": "http://localhost:8000",
+            "/rate": "http://localhost:8000"
         }
     }
 });

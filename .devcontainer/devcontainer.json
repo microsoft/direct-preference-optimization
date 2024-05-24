@@ -36,10 +36,10 @@
 		}
 	},
 	"forwardPorts": [
-		5000, 8081
+		8000, 8081
 	],
 	"portsAttributes": {
-		"5000": {
+		"8000": {
 			"label": "Backend",
 			"onAutoForward": "notify",
 			"protocol": "https"
@@ -47,7 +47,7 @@
 		"8081": {
 			"label": "Frontend",
 			"onAutoForward": "openBrowser",
-			"protocol": "https"
+			"protocol": "http"
 		}
 	}
 }

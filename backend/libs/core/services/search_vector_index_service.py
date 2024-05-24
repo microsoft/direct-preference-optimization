@@ -6,8 +6,8 @@ from langchain_community.vectorstores.azuresearch import AzureSearch
 from langchain_openai.embeddings import AzureOpenAIEmbeddings
 from langchain_core.documents import Document
 
-from models.vector_store_options import VectorStoreOptions
-from models.openai_options import OpenAIOptions
+from libs.core.models.vector_store_options import VectorStoreOptions
+from libs.core.models.openai_options import OpenAIOptions
 
 def generate_embeddings(open_ai_options: OpenAIOptions) -> AzureOpenAIEmbeddings:
     """Generate the Azure OpenAI embeddings."""
@@ -35,8 +35,35 @@ def generate_azure_search_client(
 
 def search(
     client: AzureSearch,
-    query: str, number_of_results: int
+    query: str, 
+    number_of_results: int,
+    filters: str | None = None
 ) -> List[Tuple[Document, float, float]]:
     """Search the vector index and return the document scores / reranked values."""
     return client.semantic_hybrid_search_with_score_and_rerank(
-        query=query, k=number_of_results)
+        query=query, k=number_of_results, filters=filters)
+
+def rate(
+    client: AzureSearch,
+    dialog_id: str,
+    rating: bool | None,
+    request: str,
+    response: str) -> dict:
+    """Rate the conversation."""
+    output = client.add_texts(
+        texts=[request],
+        metadatas=[{
+                "response": response,
+                "labels": [{
+                    True: "rating:thumbs-up",
+                    False: "rating:thumbs-down",
+                    None: "rating:none"}
+                    [rating]
+                ]
+        }]
+    )
+
+    return {
+        "dialog_id": dialog_id,
+        "output": output
+    }
