@@ -12,10 +12,12 @@ from models.chat_response import (
     AnswerQueryConfig,
     ChatResponse,
     ChatResponseArgs,
-    to_response_item
+    to_response_item,
+    citation_from_formatted_doc
 )
 from libs.core.models.vector_store_options import VectorStoreOptions
 from libs.core.models.openai_options import OpenAIOptions, ModelOptions, ApiOptions
+from libs.core.models.storage_account_options import StorageAccountOptions
 from libs.core.approaches.multi_index_chat_builder import MultiIndexChatBuilder
 from libs.core.approaches.chat_conversation import ChatConversationOptions, build_chain
 from libs.core.services.search_vector_index_service import (
@@ -54,6 +56,7 @@ openai_options = OpenAIOptions(
         n = openai_settings["n"]
     )
 )
+storage_account_options = StorageAccountOptions(environ["STORAGE_ACCOUNT_URL"])
 
 chat_options = ChatConversationOptions(
     system_prompt,
@@ -96,9 +99,13 @@ def conversation(chat_message: ChatRequest):
     )
 
     response = chain.invoke({"question": chat_message.dialog})
+    citations = list(map(
+        lambda doc: citation_from_formatted_doc(storage_account_options, doc),
+        response["filtered_docs"]
+    ))
     chat_answer = Answer(
         formatted_answer = response["answer"].content,
-        citations = response["filtered_docs"],
+        citations = citations,
         answer_query_config = AnswerQueryConfig(
             query=chat_message.dialog,
             query_generation_prompt = None,

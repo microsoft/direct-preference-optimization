@@ -3,6 +3,9 @@
 from enum import Enum
 from typing import List, Optional
 from dataclasses import dataclass
+from langchain.docstore.document import Document
+
+from libs.core.models.storage_account_options import StorageAccountOptions
 
 class ApproachType(Enum):
     """Enum for the approach type."""
@@ -31,10 +34,12 @@ class Answer:
     def __init__(
         self,
         formatted_answer: str = "",
-        citations: dict = [],
+        citations: dict = None,
         answer_query_config: Optional[AnswerQueryConfig] = None,
     ):
         self.formatted_answer = formatted_answer
+        if citations is None:
+            citations = {}
         self.citations = citations
         self.query_generation_prompt = answer_query_config.query_generation_prompt
         self.query = answer_query_config.query
@@ -42,13 +47,14 @@ class Answer:
 
 def to_answer_item(answer: Answer):
     """Returns a formatted item for the answer."""
-    return {
+    answer_item = {
         "formatted_answer": answer.formatted_answer,
-        "citations": answer.citations,
+        "citations": list(map(lambda citation: citation.to_dict(), answer.citations)),
         "query_generation_prompt": answer.query_generation_prompt,
         "query": answer.query,
         "query_result": answer.query_result,
     }
+    return answer_item
 
 @dataclass
 class ChatResponseArgs:
@@ -99,3 +105,37 @@ def to_response_item(response: ChatResponse):
         ),
         "show_retry": response.show_retry,
     }
+
+@dataclass
+class Citation:
+    """Model for the citation."""
+    def __init__(
+        self,
+        document_id: str = "",
+        document_title: str = "",
+        document_url: str = "",
+        document_snippet: str = "",
+    ):
+        self.document_id = document_id
+        self.document_title = document_title
+        self.document_url = document_url
+        self.document_snippet = document_snippet
+
+    def to_dict(self):
+        """Returns a dictionary representation of the citation."""
+        return {
+            "document_id": self.document_id,
+            "document_title": self.document_title,
+            "document_url": self.document_url,
+            "document_snippet": self.document_snippet,
+        }
+
+def citation_from_formatted_doc(stg_acct_opts: StorageAccountOptions, doc: Document):
+    """Creates a Citation from a formatted document."""
+    metadata = doc[0].metadata
+    return Citation(
+        document_id=metadata["document_id"],
+        document_title=metadata["file_name"],
+        document_url=f'{stg_acct_opts.url}/{metadata["container"]}/{metadata["file_name"]}',
+        document_snippet=metadata["captions"]["highlights"]
+    )
