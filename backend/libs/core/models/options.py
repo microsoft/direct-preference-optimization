@@ -2,6 +2,13 @@
 from dataclasses import dataclass
 
 @dataclass
+class ChatConversationOptions:
+    """Class used to manage the chat conversation
+        and chain runnables together for the chat conversation"""
+    system_prompt: str
+    default_return_message: str
+
+@dataclass
 class ApiOptions:
     """
     Options for configuring the OpenAI service.
@@ -38,3 +45,17 @@ class OpenAIOptions:
     """
     api_options: ApiOptions
     model_options: ModelOptions
+
+@dataclass
+class VectorStoreOptions:
+    """
+    Options for configuring the vector store service.
+    Args:
+        endpoint: The vector store endpoint to use for retrieving documents.
+        key: The vector store key to use when calling the service.
+        semantic_configuration_name: The semantic configuration name
+            used in the portal to describe the fields used for reranking.
+    """
+    endpoint: str
+    key: str
+    semantic_configuration_name: str

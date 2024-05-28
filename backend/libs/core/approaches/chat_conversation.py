@@ -1,15 +1,8 @@
 """Conversation logic for AI Chatbot."""
-from dataclasses import dataclass
 from operator import itemgetter
 from langchain_core.runnables import (RunnablePassthrough, RunnableLambda)
 from libs.core.approaches.multi_index_chat_builder import MultiIndexChatBuilder
-
-@dataclass
-class ChatConversationOptions:
-    """Class used to manage the chat conversation
-        and chain runnables together for the chat conversation"""
-    system_prompt: str
-    default_return_message: str
+from libs.core.models.options import ChatConversationOptions
 
 def _route(options: ChatConversationOptions,
     builder: MultiIndexChatBuilder,

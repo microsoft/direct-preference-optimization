@@ -11,8 +11,7 @@ from langchain_core.prompts import (
     SystemMessagePromptTemplate,
 )
 
-from libs.core.models.vector_store_options import VectorStoreOptions
-from libs.core.models.openai_options import OpenAIOptions
+from libs.core.models.options import VectorStoreOptions, OpenAIOptions
 from libs.core.services.search_vector_index_service import (
     search,
     generate_azure_search_client,
@@ -97,4 +96,3 @@ class MultiIndexChatBuilder:
     def default_return_message(self, default_return_message: str):
         """Function to return the default return message if no documents are found."""
         return AIMessage(default_return_message)
-    
