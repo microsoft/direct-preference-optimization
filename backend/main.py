@@ -18,10 +18,12 @@ from libs.core.models.options import (
     VectorStoreOptions,
     OpenAIOptions,
     ModelOptions,
-    ApiOptions
+    ChatConversationOptions,
+    ApiOptions,
+    StorageAccountOptions
 )
 from libs.core.approaches.multi_index_chat_builder import MultiIndexChatBuilder
-from libs.core.approaches.chat_conversation import ChatConversationOptions, build_chain
+from libs.core.approaches.chat_conversation import build_chain
 from libs.core.services.search_vector_index_service import (
     generate_embeddings,
     generate_azure_search_client,

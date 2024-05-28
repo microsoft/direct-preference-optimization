@@ -11,7 +11,7 @@ from langchain_core.prompts import (
     SystemMessagePromptTemplate,
 )
 
-from libs.core.models.options import VectorStoreOptions, OpenAIOptions
+from libs.core.models.options import VectorStoreOptions, OpenAIOptions, StorageAccountOptions
 from libs.core.services.search_vector_index_service import (
     search,
     generate_azure_search_client,
