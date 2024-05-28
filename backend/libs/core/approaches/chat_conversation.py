@@ -30,14 +30,10 @@ def build_chain(
 
     filtered_docs = docs | RunnableLambda(builder.sort_and_filter_documents)
 
-    chain = RunnableParallel({
-        "filtered_docs": filtered_docs,
-        "answer": 
-            {"context" : filtered_docs | builder.format_docs,
+    chain = {"context" : filtered_docs | builder.format_docs,
             "question": RunnablePassthrough() } | RunnableLambda(lambda info: _route(
         options = chat_options,
         builder = builder,
         context_info = info))
-    })
 
     return chain
