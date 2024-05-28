@@ -13,7 +13,6 @@ from models.chat_response import (
     ChatResponse,
     ChatResponseArgs,
     to_response_item,
-    citation_from_formatted_doc
 )
 from libs.core.models.vector_store_options import VectorStoreOptions
 from libs.core.models.openai_options import OpenAIOptions, ModelOptions, ApiOptions
@@ -100,13 +99,8 @@ def conversation(chat_message: ChatRequest):
     )
 
     response = chain.invoke({"question": chat_message.dialog})
-    citations = list(map(
-        lambda doc: citation_from_formatted_doc(storage_account_options, doc),
-        response["filtered_docs"]
-    ))
     chat_answer = Answer(
         formatted_answer = response["answer"].content,
-        citations = citations,
         answer_query_config = AnswerQueryConfig(
             query=chat_message.dialog,
             query_generation_prompt = None,
