@@ -28,6 +28,7 @@ export interface DialogRequest {
 export interface RateRequest extends DialogRequest {
     rating?: boolean | undefined;
     response: string;
+    request?: string;
 }
 
 export interface ChatRequest extends DialogRequest {
@@ -62,7 +63,7 @@ export type UserProfile = {
     user_name: string;
     description: string;
     sample_questions?: string[];
-    role: RoleType
+    role: RoleType;
 };
 
 export type ChatError = {

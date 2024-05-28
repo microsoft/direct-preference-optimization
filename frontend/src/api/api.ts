@@ -21,6 +21,7 @@ export async function rateApi(request: RateRequest): Promise<RateResponse> {
             conversation_id: request.conversationID,
             dialog_id: request.dialogID,
             rating: request.rating || null,
+            request: request.request ?? "no request",
             response: request.response ?? "no response"
         })
     });
@@ -33,7 +34,6 @@ export async function rateApi(request: RateRequest): Promise<RateResponse> {
     }
 
     return parsedResponse;
-
 }
 
 export async function chatApi(request: ChatRequest): Promise<ChatResponse> {
@@ -63,16 +63,14 @@ export async function chatApi(request: ChatRequest): Promise<ChatResponse> {
 
     const parsedResponse: ChatResponse = await response.json();
     if (response.status > 299 || !response.ok) {
-        throw new ChatResponseError(
-            parsedResponse.error ?? "An unknown error occurred.",
-            parsedResponse.show_retry ?? false);
+        throw new ChatResponseError(parsedResponse.error ?? "An unknown error occurred.", parsedResponse.show_retry ?? false);
     }
 
     return parsedResponse;
 }
 
 export async function getSearchSettings(): Promise<SearchSettings> {
-    return {vectorization_enabled: true};
+    return { vectorization_enabled: true };
 }
 
 export function getCitationFilePath(citation: string): string {

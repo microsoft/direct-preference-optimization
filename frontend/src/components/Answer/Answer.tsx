@@ -20,7 +20,7 @@ interface Props {
     onFollowupQuestionClicked?: (question: string) => void;
     showFollowupQuestions?: boolean;
     onRetryClicked?: () => void;
-    onRating?: (value: boolean | undefined) => void
+    onRating?: (value: boolean | undefined) => void;
     retryable: boolean;
     dialogInfo: DialogRequest;
 }
@@ -42,20 +42,18 @@ export const Answer = ({
     const parsedAnswer = useMemo(() => parseAnswerToHtml(chatResponse, onCitationClicked), [chatResponse]);
     const sanitizedAnswerHtml = DOMPurify.sanitize(parsedAnswer.answerHtml);
     const answer = chatResponse.answer;
-    onRating = onRating || (() => { });
+    onRating = onRating || (() => {});
     const rate = (value: boolean | undefined) => {
         rateApi({
             userID: dialogInfo.userID,
             conversationID: dialogInfo.conversationID,
             dialogID: dialogInfo.dialogID,
             rating: value,
+            request: answer.query,
             response: answer.formatted_answer
         }).then(() => onRating(value));
-    }
-    const shouldNotShowThoughtProcess = !chatResponse.classification
-        && !answer.query
-        && !answer.query_generation_prompt
-        && !answer.query_result;
+    };
+    const shouldNotShowThoughtProcess = !chatResponse.classification && !answer.query && !answer.query_generation_prompt && !answer.query_result;
     return (
         <Stack className={`${styles.answerContainer} ${isSelected && styles.selected}`} verticalAlign="space-between">
             <Stack.Item>
@@ -96,7 +94,7 @@ export const Answer = ({
             </Stack.Item>
 
             <Stack.Item>
-                <AnswerRating onRating={(value) => rate(value)} rating={rating} />
+                <AnswerRating onRating={value => rate(value)} rating={rating} />
             </Stack.Item>
 
             {!!parsedAnswer.citations.length && (
