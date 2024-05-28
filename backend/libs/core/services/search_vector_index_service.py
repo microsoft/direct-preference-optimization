@@ -6,8 +6,7 @@ from langchain_community.vectorstores.azuresearch import AzureSearch
 from langchain_openai.embeddings import AzureOpenAIEmbeddings
 from langchain_core.documents import Document
 
-from libs.core.models.vector_store_options import VectorStoreOptions
-from libs.core.models.openai_options import OpenAIOptions
+from libs.core.models.options import VectorStoreOptions, OpenAIOptions
 
 def generate_embeddings(open_ai_options: OpenAIOptions) -> AzureOpenAIEmbeddings:
     """Generate the Azure OpenAI embeddings."""

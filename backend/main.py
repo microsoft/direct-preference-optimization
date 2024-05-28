@@ -14,9 +14,12 @@ from models.chat_response import (
     ChatResponseArgs,
     to_response_item,
 )
-from libs.core.models.vector_store_options import VectorStoreOptions
-from libs.core.models.openai_options import OpenAIOptions, ModelOptions, ApiOptions
-from libs.core.models.storage_account_options import StorageAccountOptions
+from libs.core.models.options import (
+    VectorStoreOptions,
+    OpenAIOptions,
+    ModelOptions,
+    ApiOptions
+)
 from libs.core.approaches.multi_index_chat_builder import MultiIndexChatBuilder
 from libs.core.approaches.chat_conversation import ChatConversationOptions, build_chain
 from libs.core.services.search_vector_index_service import (
