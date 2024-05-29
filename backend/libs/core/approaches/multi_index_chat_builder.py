@@ -68,15 +68,15 @@ class MultiIndexChatBuilder:
             embedding_function = embedding)
         return search(client, query, 10)
 
-    def get_primary_documents(self, context: dict):
+    def get_primary_documents(self, question: str):
         """ Creating a new instance of the SearchVectorIndexService class with the 
             primary index name."""
-        return self._get_documents(self._primary_index_name, context["question"])
+        return self._get_documents(self._primary_index_name, question)
 
-    def get_secondary_documents(self, context: dict):
+    def get_secondary_documents(self, question: str):
         """ Creating a new instance of the SearchVectorIndexService class with the 
             secondary index name."""
-        return self._get_documents(self._secondary_index_name, context["question"])
+        return self._get_documents(self._secondary_index_name, question)
 
     def sort_and_filter_documents(self, _dict):
         """ Function for filtering and sorting documents based on their reranked scores.

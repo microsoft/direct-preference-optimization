@@ -1,4 +1,5 @@
 """Conversation logic for AI Chatbot."""
+from operator import itemgetter
 from langchain_core.runnables import (RunnablePassthrough, RunnableParallel, RunnableLambda)
 from libs.core.approaches.multi_index_chat_builder import MultiIndexChatBuilder
 from libs.core.models.options import ChatConversationOptions
@@ -23,10 +24,10 @@ def build_chain(
     """Building the chain of runnables for the chat conversation."""
 
     docs = RunnableParallel(
-        {"question": RunnablePassthrough(),
-         "primary_documents": RunnableLambda(builder.get_primary_documents),
-         "secondary_documents": RunnableLambda(builder.get_secondary_documents)}
-    )
+        {
+        "primary_documents": itemgetter("question") | RunnableLambda(builder.get_primary_documents),
+        "secondary_documents": itemgetter("question") | RunnableLambda(builder.get_secondary_documents)
+        })
 
     filtered_docs = docs | RunnableLambda(builder.sort_and_filter_documents)
 
