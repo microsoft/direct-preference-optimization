@@ -34,7 +34,7 @@ def generate_azure_search_client(
 
 def search(
     client: AzureSearch,
-    query: str, 
+    query: str,
     number_of_results: int,
     filters: str | None = None
 ) -> List[Tuple[Document, float, float]]:
