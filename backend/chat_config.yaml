@@ -1,7 +1,9 @@
 chat_approach:
   default_return_message: "I'm sorry, I don't have an answer for that. Can you please rephrase your question?"
   system_prompt: |-
-                  Answer the question based only on the following context. If none of the resources answer the question, then please ask the user to rephrase their question to focus on Container Apps or Tomatoes.
+                  Answer the question based only on the following context. 
+                  If none of the resources answer the question, then please ask the user to rephrase their question to focus on Container Apps or Tomatoes.
+                  Make sure you cite the source of the information by providing a clickable link to the document's URL.
                   {context}
   documents:
     primary_index_name: "aca-data"

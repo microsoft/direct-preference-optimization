@@ -12,16 +12,18 @@ from models.chat_response import (
     AnswerQueryConfig,
     ChatResponse,
     ChatResponseArgs,
-    to_response_item
+    to_response_item,
 )
 from libs.core.models.options import (
     VectorStoreOptions,
     OpenAIOptions,
     ModelOptions,
-    ApiOptions
+    ChatConversationOptions,
+    ApiOptions,
+    StorageAccountOptions
 )
 from libs.core.approaches.multi_index_chat_builder import MultiIndexChatBuilder
-from libs.core.approaches.chat_conversation import ChatConversationOptions, build_chain
+from libs.core.approaches.chat_conversation import build_chain
 from libs.core.services.search_vector_index_service import (
     generate_embeddings,
     generate_azure_search_client,
@@ -58,6 +60,7 @@ openai_options = OpenAIOptions(
         n = openai_settings["n"]
     )
 )
+storage_account_options = StorageAccountOptions(environ["STORAGE_ACCOUNT_URL"])
 
 chat_options = ChatConversationOptions(
     system_prompt,
@@ -68,7 +71,8 @@ chat_builder = MultiIndexChatBuilder(
     primary_index_name,
     secondary_index_name,
     vector_store_options,
-    openai_options
+    openai_options,
+    storage_account_options
 )
 
 app = FastAPI()
@@ -99,9 +103,9 @@ def conversation(chat_message: ChatRequest):
         chat_options=chat_options
     )
 
-    answer = chain.invoke({"question": chat_message.dialog})
+    response = chain.invoke({"question": chat_message.dialog})
     chat_answer = Answer(
-        formatted_answer = answer.content,
+        formatted_answer = response.content,
         answer_query_config = AnswerQueryConfig(
             query=chat_message.dialog,
             query_generation_prompt = None,
