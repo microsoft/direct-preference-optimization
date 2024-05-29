@@ -8,9 +8,8 @@ from models.chat_response import (
     AnswerQueryConfig,
     ChatResponse,
     ChatResponseArgs,
-    to_response_item
+    to_response_item,
 )
-
 from libs.core.approaches.multi_index_chat_builder import MultiIndexChatBuilder
 from libs.core.approaches.chat_conversation import build_chain
 from libs.core.services.search_vector_index_service import (
@@ -54,9 +53,9 @@ def conversation(chat_message: ChatRequest):
         chat_options=chat_options
     )
 
-    answer = chain.invoke({"question": chat_message.dialog})
+    response = chain.invoke({"question": chat_message.dialog})
     chat_answer = Answer(
-        formatted_answer = answer.content,
+        formatted_answer = response.content,
         answer_query_config = AnswerQueryConfig(
             query=chat_message.dialog,
             query_generation_prompt = None,

@@ -56,9 +56,19 @@ class VectorStoreOptions(BaseSettings):
     key: str = Field()
     semantic_configuration_name: str = Field()
 
+class StorageAccountOptions(BaseSettings):
+    """
+    Options for configuring the Storage Account where the original documents are stored.
+    Args:
+        url: The base url of the storage account.
+    Note: The system expects that the container name will be returned with the document metadata.
+    """
+    url: str = Field()
+
 class MultiIndexVectorStoreOptions(BaseSettings):
     """Options for configuring the multi-index vector store service."""
     primary_index_name: str = Field()
     secondary_index_name: str = Field()
     vector_store_options: VectorStoreOptions = Field()
     open_ai_options: OpenAIOptions = Field()
+    storage_account_options: StorageAccountOptions = Field()

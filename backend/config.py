@@ -6,13 +6,12 @@ from libs.core.models.options import (
     ModelOptions,
     ApiOptions
 )
+from settings_factory import load_config
 
 from libs.core.approaches.chat_conversation import ChatConversationOptions
 
-vector_store_options = VectorStoreOptions()
-openai_options = OpenAIOptions(
-    api_options = ApiOptions(),
-    model_options = ModelOptions()
-)
-chat_options = ChatConversationOptions()
-multi_index_options = MultiIndexVectorStoreOptions()
+config = load_config()
+vector_store_options = VectorStoreOptions.from_settings(config)
+openai_options = OpenAIOptions.from_settings(config)
+chat_options = ChatConversationOptions.from_settings(config)
+multi_index_options = MultiIndexVectorStoreOptions.from_settings(config)
