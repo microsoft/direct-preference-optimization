@@ -3,8 +3,6 @@ from libs.core.models.options import (
     MultiIndexVectorStoreOptions,
     VectorStoreOptions,
     OpenAIOptions,
-    ModelOptions,
-    ApiOptions
 )
 from settings_factory import load_config
 
