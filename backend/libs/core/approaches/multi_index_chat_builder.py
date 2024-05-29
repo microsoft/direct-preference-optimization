@@ -17,6 +17,7 @@ from libs.core.services.search_vector_index_service import (
     generate_azure_search_client,
     generate_embeddings
 )
+from libs.core.services.sas_token_service import SasTokenService
 
 class MultiIndexChatBuilder:
     """Class used to help build a dynamic chat conversation."""
@@ -33,6 +34,7 @@ class MultiIndexChatBuilder:
         self._vector_store_options = vector_store_options
         self._open_ai_options = open_ai_options
         self._storage_account_options = storage_account_options
+        self._token_service = SasTokenService(storage_account_options)
 
     def llm(self):
         """Creates and returns an instance of a LLM class."""
@@ -95,7 +97,12 @@ class MultiIndexChatBuilder:
         """Function to format the documents into a string, with the URL included for citations"""
         formatted_docs = ""
         for d in docs:
-            formatted_docs += f'URL: {self._storage_account_options.url}/{d[0].metadata["container"]}/{d[0].metadata["file_name"]}'
+            url = self._storage_account_options.url
+            file_name = d[0].metadata["file_name"]
+            container = d[0].metadata["container"]
+
+            sas_token = self._token_service.get_sas_token_for_blob(file_name, container)
+            formatted_docs += f'URL: {url}/{container}/{file_name}?{sas_token}'
             formatted_docs += f'CONTENT: {d[0].page_content}\n\n'
         return formatted_docs
 

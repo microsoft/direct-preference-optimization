@@ -60,7 +60,7 @@ openai_options = OpenAIOptions(
         n = openai_settings["n"]
     )
 )
-storage_account_options = StorageAccountOptions(environ["STORAGE_ACCOUNT_URL"])
+storage_account_options = StorageAccountOptions(environ["STORAGE_ACCOUNT_NAME"])
 
 chat_options = ChatConversationOptions(
     system_prompt,

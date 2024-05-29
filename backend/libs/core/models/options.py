@@ -68,4 +68,7 @@ class StorageAccountOptions:
         url: The base url of the storage account.
     Note: The system expects that the container name will be returned with the document metadata.
     """
-    url: str
+
+    def __init__(self, account_name: str):
+        self.account_name = account_name
+        self.url = f"https://{account_name}.blob.core.windows.net"
