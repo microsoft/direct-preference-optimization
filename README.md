@@ -24,8 +24,6 @@ When searching for data, both internally within your company and externally, it 
 4. Chat API Service - Hosts the chat application for DSL based questions
 5. AI Search - Used as a vector database and for semantic searching across indexes of chunked data.
 
-Storage Blob Delegator
-
 ## Code Description
 ### Backend
 The backend was built using Python and utilizes FastAPI for creating routes to accept traffic. We use Langchain to search multiple indexes of data within the same AI Search. Langchain allows us to conduct parallel searches and then join the information back together, sorting and filtering the data as needed. In the current implementation, we are utilizing a managed identity[^1] and generating SAS tokens to display the documents that are cited in the response.
@@ -33,14 +31,15 @@ The backend was built using Python and utilizes FastAPI for creating routes to a
 [^1]: Since the sas token is generated from the API, the managed identity must have the Storage Blob Delegator role to view documents.
 
 ### Frontend
+The frontend application is a clone from the [Enterprise Samples](https://github.com/Azure-Samples/openai/tree/main/End_to_end_Solutions/AOAISearchDemo/app/frontend) and we have removed some of the features for user profile and history to focus solely on the chat features. This is a React application that calls the backend API using the vite proxy, which is loaded alongside the application on the vite server.
 
 ## Next Steps
-1. return the ratings
-2. guardrails
-3. guidance library for optimizing token usage
-4. prompty for prompt engineering and semantic evaluation
-5. ground truth testing
-6. history
+1. Utilize the the ratings to help add additional context to the prompt for high and low quality responses as well as potentially bypass the LLM.
+2. Implement guardrails to ensure the LLM responses are on track and have not deviated from the intent.
+3. Utilize the guidance library for optimizing token usage since we are implementing RAG and passing in documents to the context. 
+4. Add prompty for prompt engineering and semantic evaluation.
+5. Implement ground truth testing to validate the responses that are coming back from the multi-index search are accurate.
+6. Add user history to the request so users can ask questions on data that was previously returned.
 
 ## Contributing
 
