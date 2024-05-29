@@ -1,5 +1,6 @@
 """Module to generate SAS token for Azure Blob Storage"""
 from datetime import datetime, timedelta, timezone
+from dateutil.parser import isoparse
 from azure.storage.blob import generate_blob_sas, BlobServiceClient, BlobSasPermissions, UserDelegationKey
 from azure.identity import DefaultAzureCredential
 from libs.core.models.options import StorageAccountOptions
@@ -19,7 +20,7 @@ class SasTokenService:
                 self._storage_account_options.url,
                 credential=DefaultAzureCredential())
 
-        if not self._user_delegation_key or self._user_delegation_key.signed_expiry < datetime.now(timezone.utc):
+        if not self._user_delegation_key or isoparse(self._user_delegation_key.signed_expiry) < datetime.now(timezone.utc):
             self._user_delegation_key = self._blob_service_client.get_user_delegation_key(
                 key_start_time=datetime.now(timezone.utc),
                 key_expiry_time=datetime.now(timezone.utc) + timedelta(hours=1)
