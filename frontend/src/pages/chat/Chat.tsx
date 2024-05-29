@@ -1,20 +1,11 @@
 import { useRef, useState, useEffect } from "react";
 import { Checkbox, Panel, DefaultButton, TextField, SpinButton, ChoiceGroup, IChoiceGroupOption, Label } from "@fluentui/react";
 import { Delete24Regular, SparkleFilled } from "@fluentui/react-icons";
+import { useMsal } from "@azure/msal-react";
 
 import styles from "./Chat.module.css";
 
-import {
-    chatApi,
-    ChatResponse,
-    ChatRequest,
-    UserProfile,
-    ApproachType,
-    ChatError,
-    ChatResponseError,
-    UserQuestion,
-    SearchSettings
-} from "../../api";
+import { chatApi, ChatResponse, ChatRequest, UserProfile, ApproachType, ChatError, ChatResponseError, UserQuestion, SearchSettings } from "../../api";
 import { Answer, AnswerLoading } from "../../components/Answer";
 import { QuestionInput } from "../../components/QuestionInput";
 import { ExampleList } from "../../components/Example";
@@ -23,10 +14,9 @@ import { AnalysisPanel, AnalysisPanelTabs } from "../../components/AnalysisPanel
 import { TopBarButton } from "../../components/TopBarButton";
 import { ErrorToast } from "../../components/ErrorToast";
 
-type Props = {
-};
+type Props = {};
 
-const Chat = ({ }: Props) => {
+const Chat = ({}: Props) => {
     const [isUserPanelOpen, setIsUserPanelOpen] = useState(false);
     const [isConfigPanelOpen, setIsConfigPanelOpen] = useState(false);
     const [retrieveCount, setRetrieveCount] = useState<number>(20);
@@ -50,6 +40,8 @@ const Chat = ({ }: Props) => {
 
     const [selectedAnswer, setSelectedAnswer] = useState<number>(0);
     const [dialog, setDialog] = useState<[user: string, response: ChatResponse][]>([]);
+
+    const { instance } = useMsal();
 
     useEffect(() => {
         setConversationID(crypto.randomUUID());
@@ -93,7 +85,10 @@ const Chat = ({ }: Props) => {
                     classificationOverride
                 }
             };
-            const result = await chatApi(request);
+
+            const activeAccount = instance.getActiveAccount();
+            const result = await chatApi(request, activeAccount?.idToken);
+
             setDialog([...dialog, [question, result]]);
         } catch (e) {
             if (e instanceof ChatResponseError) {

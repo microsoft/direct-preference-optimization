@@ -7,3 +7,5 @@ langchain-community
 azure-search-documents
 azure-identity
 uvicorn
+httpx
+python-jose

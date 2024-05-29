@@ -36,12 +36,13 @@ export async function rateApi(request: RateRequest): Promise<RateResponse> {
     return parsedResponse;
 }
 
-export async function chatApi(request: ChatRequest): Promise<ChatResponse> {
+export async function chatApi(request: ChatRequest, idToken?: string): Promise<ChatResponse> {
     const overrides = request.overrides;
     const response = await fetch("/chat", {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`
         },
         body: JSON.stringify({
             user_id: request.userID,

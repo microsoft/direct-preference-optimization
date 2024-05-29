@@ -4,6 +4,8 @@ import os
 import yaml
 
 from fastapi import FastAPI
+from fastapi.requests import Request
+
 from dotenv import load_dotenv
 from models.rate_models import RateRequest
 from models.chat_request import ChatRequest
@@ -27,6 +29,8 @@ from libs.core.services.search_vector_index_service import (
     generate_azure_search_client,
     rate
 )
+
+from auth import (initialize_auth, requires_auth)
 
 load_dotenv(override=True, dotenv_path=f"{os.getcwd()}/.env")
 with open("chat_config.yaml", "r", encoding="utf-8") as file:
@@ -72,9 +76,11 @@ chat_builder = MultiIndexChatBuilder(
 )
 
 app = FastAPI()
+initialize_auth(environ["AZURE_TENANT_ID"], environ["AZURE_CLIENT_ID"])
 
 @app.post("/rate")
-def rate_response(rate_message: RateRequest):
+@requires_auth
+async def rate_response(request: Request, rate_message: RateRequest):
     """API endpoint for rating the conversation."""
     embeddings = generate_embeddings(openai_options)
     client = generate_azure_search_client(
@@ -92,7 +98,8 @@ def rate_response(rate_message: RateRequest):
     return response
 
 @app.post("/chat")
-def conversation(chat_message: ChatRequest):
+@requires_auth
+async def conversation(request: Request, chat_message: ChatRequest):
     """API endpoint for chat conversation."""
     chain = build_chain(
         builder=chat_builder,
