@@ -40,12 +40,13 @@ class Answer:
 
 def to_answer_item(answer: Answer):
     """Returns a formatted item for the answer."""
-    return {
+    answer_item = {
         "formatted_answer": answer.formatted_answer,
         "query_generation_prompt": answer.query_generation_prompt,
         "query": answer.query,
         "query_result": answer.query_result,
     }
+    return answer_item
 
 @dataclass
 class ChatResponseArgs:
