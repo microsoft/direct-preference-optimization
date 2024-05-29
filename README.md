@@ -30,7 +30,7 @@ Storage Blob Delegator
 ### Backend
 The backend was built using Python and utilizes FastAPI for creating routes to accept traffic. We use Langchain to search multiple indexes of data within the same AI Search. Langchain allows us to conduct parallel searches and then join the information back together, sorting and filtering the data as needed. In the current implementation, we are utilizing a managed identity[^1] and generating SAS tokens to display the documents that are cited in the response.
 
-[^1] Since the sas token is generated from the API, the managed identity must have the Storage Blob Delegator role to view documents.
+[^1]: Since the sas token is generated from the API, the managed identity must have the Storage Blob Delegator role to view documents.
 
 ### Frontend
 
