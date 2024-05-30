@@ -1,4 +1,5 @@
 python-dotenv
+python-dateutil
 fastapi
 openai
 langchain
@@ -6,4 +7,7 @@ langchain-openai
 langchain-community
 azure-search-documents
 azure-identity
+azure-storage-blob
 uvicorn
+pydantic
+pydantic-settings

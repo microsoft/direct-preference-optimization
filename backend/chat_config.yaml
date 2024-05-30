@@ -1,7 +1,30 @@
 chat_approach:
   default_return_message: "I'm sorry, I don't have an answer for that. Can you please rephrase your question?"
   system_prompt: |-
-                  Answer the question based only on the following context. If none of the resources answer the question, then please ask the user to rephrase their question to focus on Container Apps or Tomatoes.
+                  Answer the question based only on the following context. 
+                  If none of the resources answer the question, then please ask the user to rephrase their question to focus on Container Apps or Tomatoes.
+
+                  Remember, you must return both an answer and citations. A citation consists of a VERBATIM quote that
+                  justifies the answer and the ID of the quote article. Return a citation for every quote across all articles
+                  that justify the answer. Use the following format for your final output:
+
+                  {{
+                      "answer": "The answer to the question.",
+                      "citations": [
+                          {{
+                              "id": "The ID of the source",
+                              "url": "The URL of the source.",
+                              "title": "A short title of the source."
+                          }},
+                          {{
+                              "id": "The ID of the source",
+                              "url": "The URL of the source.",
+                              "title": "A short title of the source."
+                          }},
+                          ...
+                      ]
+                  }}
+
                   {context}
   documents:
     primary_index_name: "aca-data"

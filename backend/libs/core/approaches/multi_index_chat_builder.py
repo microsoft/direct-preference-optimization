@@ -11,32 +11,33 @@ from langchain_core.prompts import (
     SystemMessagePromptTemplate,
 )
 
-from libs.core.models.options import VectorStoreOptions, OpenAIOptions
+from libs.core.models.options import MultiIndexVectorStoreOptions
 from libs.core.services.search_vector_index_service import (
     search,
     generate_azure_search_client,
     generate_embeddings
 )
+from libs.core.services.sas_token_service import SasTokenService
 
 class MultiIndexChatBuilder:
     """Class used to help build a dynamic chat conversation."""
     def __init__(
             self,
-            primary_index_name: str,
-            secondary_index_name: str,
-            vector_store_options: VectorStoreOptions,
-            open_ai_options: OpenAIOptions
+            multi_index_options: MultiIndexVectorStoreOptions
         ):
-        self._primary_index_name = primary_index_name
-        self._secondary_index_name = secondary_index_name
-        self._vector_store_options = vector_store_options
-        self._open_ai_options = open_ai_options
+        self._primary_index_name = multi_index_options.primary_index_name
+        self._secondary_index_name = multi_index_options.secondary_index_name
+        self._vector_store_options = multi_index_options.vector_store_options
+        self._open_ai_options = multi_index_options.open_ai_options
+        self._storage_account_options = multi_index_options.storage_account_options
+        self._token_service = SasTokenService(multi_index_options.storage_account_options)
+
 
     def llm(self):
         """Creates and returns an instance of a LLM class."""
         open_ai_options = self._open_ai_options
         api_options = open_ai_options.api_options
-        model_options = open_ai_options.model_options
+        model_options = open_ai_options.ai_model_options
         return AzureChatOpenAI(
             openai_api_version=api_options.api_version,
             azure_deployment=model_options.deployment_model,
@@ -66,15 +67,15 @@ class MultiIndexChatBuilder:
             embedding_function = embedding)
         return search(client, query, 10)
 
-    def get_primary_documents(self, query: str):
+    def get_primary_documents(self, question: str):
         """ Creating a new instance of the SearchVectorIndexService class with the 
             primary index name."""
-        return self._get_documents(self._primary_index_name, query)
+        return self._get_documents(self._primary_index_name, question)
 
-    def get_secondary_documents(self, query: str):
+    def get_secondary_documents(self, question: str):
         """ Creating a new instance of the SearchVectorIndexService class with the 
             secondary index name."""
-        return self._get_documents(self._secondary_index_name, query)
+        return self._get_documents(self._secondary_index_name, question)
 
     def sort_and_filter_documents(self, _dict):
         """ Function for filtering and sorting documents based on their reranked scores.
@@ -90,8 +91,18 @@ class MultiIndexChatBuilder:
         return documents
 
     def format_docs(self, docs):
-        """Function to format the documents into a string."""
-        return "\n\n".join([d[0].page_content for d in docs])
+        """Function to format the documents into a string, with the URL included for citations"""
+        formatted_docs = ""
+        for i, d in enumerate(docs):
+            url = self._storage_account_options.url
+            file_name = d[0].metadata["file_name"]
+            container = d[0].metadata["container"]
+
+            sas_token = self._token_service.get_sas_token_for_blob(file_name, container)
+            formatted_docs += f'ID: {i}'
+            formatted_docs += f'URL: {url}/{container}/{file_name}?{sas_token}'
+            formatted_docs += f'CONTENT: {d[0].page_content}\n\n'
+        return formatted_docs
 
     def default_return_message(self, default_return_message: str):
         """Function to return the default return message if no documents are found."""
