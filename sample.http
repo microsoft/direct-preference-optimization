@@ -2,15 +2,29 @@ POST http://localhost:8000/chat
 Content-Type: application/json
 
 {
-    "user_id":"",
-    "conversation_id":"42a4a3c4-4c2e-48dc-add9-3f1b6aec2f97",
-    "dialog_id":"7e40728b-cf3d-44a4-bef2-7ae7c08042a2",
-    "dialog":"Tell me a joke about API Management.",
-    "overrides":{
-        "semantic_ranker":true,
-        "semantic_captions":false,
-        "top":20,
-        "suggest_followup_questions":false,
-        "vector_search":true
-        }
+"user_id":"",
+"conversation_id":"42a4a3c4-4c2e-48dc-add9-3f1b6aec2f97",
+"dialog_id":"7e40728b-cf3d-44a4-bef2-7ae7c08042a2",
+"dialog":"Tell me a joke about API Management.",
+"overrides":{
+    "semantic_ranker":true,
+    "semantic_captions":false,
+    "top":20,
+    "suggest_followup_questions":false,
+    "vector_search":true
     }
+}
+
+
+POST http://localhost:8000/rate
+Content-Type: application/json
+
+{
+   "user_id":"",
+   "conversation_id":"458908c0-d3d0-4caf-8404-0027185ce940",
+   "dialog_id":"da3de9c8-4ec9-4acb-8ed3-6bff9939f64b",
+   "rating":true,
+   "request":"How do you prune tomato plants?",
+   "response":"Pruning tomatoes, especially indeterminate varieties, involves removing suckers, which are the side shoots that grow from the angle where a leaf meets the stem. Here’s a step-by-step guide on how to prune tomato plants:\n\n1. **Identify the Type of Tomato**: Determine if your tomato plant is determinate or indeterminate. Pruning is generally recommended for indeterminate varieties.\n\n2. **Support the Plant**: Ensure your tomato plant is supported with stakes, trellises, or cages. This will help manage the growth and make pruning easier.\n\n3. **Select Main Stems**: If you are using stakes or strings for support, you might want to allow two main stems to develop. The first is the main stem, and the second is a vigorous sucker that develops just below the first flower cluster.\n\n4. **Remove Suckers**: Pinch out all other suckers when they are small, ideally by hand. If they are too large, use clean garden snips or shears. Regularly check and remove new suckers every 7 to 10 days.\n\n5. **Adjust Number of Stems**: Depending on your support system, you can allow more than two stems to develop. For example, if using heavy-duty cages or trellises, you might let more stems grow, provided they are well-supported.\n\n6. **Prune Lower Leaves**: As the plant grows, remove the lower leaves, especially those touching the soil, to reduce the risk of soilborne diseases.\n\nBy following these steps, you can help your tomato plants grow healthier, improve air circulation, and potentially increase fruit yield."
+}
+

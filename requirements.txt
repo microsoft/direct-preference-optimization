@@ -9,3 +9,5 @@ azure-search-documents
 azure-identity
 azure-storage-blob
 uvicorn
+pydantic
+pydantic-settings

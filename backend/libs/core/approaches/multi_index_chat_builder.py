@@ -11,7 +11,7 @@ from langchain_core.prompts import (
     SystemMessagePromptTemplate,
 )
 
-from libs.core.models.options import VectorStoreOptions, OpenAIOptions, StorageAccountOptions
+from libs.core.models.options import MultiIndexVectorStoreOptions
 from libs.core.services.search_vector_index_service import (
     search,
     generate_azure_search_client,
@@ -23,24 +23,21 @@ class MultiIndexChatBuilder:
     """Class used to help build a dynamic chat conversation."""
     def __init__(
             self,
-            primary_index_name: str,
-            secondary_index_name: str,
-            vector_store_options: VectorStoreOptions,
-            open_ai_options: OpenAIOptions,
-            storage_account_options: StorageAccountOptions
+            multi_index_options: MultiIndexVectorStoreOptions
         ):
-        self._primary_index_name = primary_index_name
-        self._secondary_index_name = secondary_index_name
-        self._vector_store_options = vector_store_options
-        self._open_ai_options = open_ai_options
-        self._storage_account_options = storage_account_options
-        self._token_service = SasTokenService(storage_account_options)
+        self._primary_index_name = multi_index_options.primary_index_name
+        self._secondary_index_name = multi_index_options.secondary_index_name
+        self._vector_store_options = multi_index_options.vector_store_options
+        self._open_ai_options = multi_index_options.open_ai_options
+        self._storage_account_options = multi_index_options.storage_account_options
+        self._token_service = SasTokenService(multi_index_options.storage_account_options)
+
 
     def llm(self):
         """Creates and returns an instance of a LLM class."""
         open_ai_options = self._open_ai_options
         api_options = open_ai_options.api_options
-        model_options = open_ai_options.model_options
+        model_options = open_ai_options.ai_model_options
         return AzureChatOpenAI(
             openai_api_version=api_options.api_version,
             azure_deployment=model_options.deployment_model,

@@ -11,7 +11,7 @@ from libs.core.models.options import VectorStoreOptions, OpenAIOptions
 def generate_embeddings(open_ai_options: OpenAIOptions) -> AzureOpenAIEmbeddings:
     """Generate the Azure OpenAI embeddings."""
     api_options = open_ai_options.api_options
-    model_options = open_ai_options.model_options
+    model_options = open_ai_options.ai_model_options
     return AzureOpenAIEmbeddings(
         openai_api_key=api_options.api_key,
         openai_api_version=api_options.api_version,
