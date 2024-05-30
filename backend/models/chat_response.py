@@ -52,7 +52,6 @@ class Answer:
         self.query_generation_prompt = answer_query_config.query_generation_prompt
         self.query = answer_query_config.query
         self.query_result = answer_query_config.query_result
-        self.citations = [] if citations is None else citations
 
 def to_answer_item(answer: Answer):
     """Returns a formatted item for the answer."""
