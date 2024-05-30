@@ -36,8 +36,15 @@ export interface ChatRequest extends DialogRequest {
     overrides?: ChatRequestOverrides;
 }
 
+export type Citation = {
+    id: string;
+    url: string;
+    title: string;
+};
+
 export type Answer = {
     formatted_answer: string;
+    citations: Array<Citation>;
     query_generation_prompt?: string;
     query?: string;
     query_result?: string;
