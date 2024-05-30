@@ -4,20 +4,22 @@ chat_approach:
                   Answer the question based only on the following context. 
                   If none of the resources answer the question, then please ask the user to rephrase their question to focus on Container Apps or Tomatoes.
 
-                  Remember, you must return both an answer and citations. A citation consists of a quote that
-                  justifies the answer and the title and URL of the quoted article. Return a citation for every quote across all articles
+                  Remember, you must return both an answer and citations. A citation consists of a VERBATIM quote that
+                  justifies the answer and the ID of the quote article. Return a citation for every quote across all articles
                   that justify the answer. Use the following format for your final output:
 
                   {{
                       "answer": "The answer to the question.",
                       "citations": [
                           {{
-                              "title": "The title of the source.",
-                              "url": "The URL of the source."
+                              "id": "The ID of the source",
+                              "url": "The URL of the source.",
+                              "title": "A short title of the source."
                           }},
                           {{
-                              "title": "The title of the source.",
-                              "url": "The URL of the source."
+                              "id": "The ID of the source",
+                              "url": "The URL of the source.",
+                              "title": "A short title of the source."
                           }},
                           ...
                       ]

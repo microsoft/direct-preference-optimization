@@ -13,6 +13,19 @@ class ApproachType(Enum):
     INAPPROPRIATE = "5"
 
 @dataclass
+class Citation:
+    """Model for the citation."""
+    def __init__(
+        self,
+        id: str,
+        url: str,
+        title: str
+    ):
+        self.id = id
+        self.url = url
+        self.title = title
+
+@dataclass
 class AnswerQueryConfig:
     """Model for the answer query configuration."""
     def __init__(
@@ -31,14 +44,15 @@ class Answer:
     def __init__(
         self,
         formatted_answer: str = "",
-        citations: List[str] = None,
         answer_query_config: Optional[AnswerQueryConfig] = None,
+        citations: Optional[List[Citation]] = None,
     ):
         self.formatted_answer = formatted_answer
         self.citations = [] if citations is None else citations
         self.query_generation_prompt = answer_query_config.query_generation_prompt
         self.query = answer_query_config.query
         self.query_result = answer_query_config.query_result
+        self.citations = [] if citations is None else citations
 
 def to_answer_item(answer: Answer):
     """Returns a formatted item for the answer."""
@@ -48,6 +62,7 @@ def to_answer_item(answer: Answer):
         "query_generation_prompt": answer.query_generation_prompt,
         "query": answer.query,
         "query_result": answer.query_result,
+        "citations": answer.citations
     }
     return answer_item
 

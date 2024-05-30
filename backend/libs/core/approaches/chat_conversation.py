@@ -1,7 +1,6 @@
 """Conversation logic for AI Chatbot."""
 from operator import itemgetter
 from langchain_core.runnables import (RunnablePassthrough, RunnableParallel, RunnableLambda)
-from langchain_core.output_parsers import JsonOutputParser
 from libs.core.approaches.multi_index_chat_builder import MultiIndexChatBuilder
 from libs.core.models.options import ChatConversationOptions
 
@@ -32,12 +31,10 @@ def build_chain(
 
     filtered_docs = docs | RunnableLambda(builder.sort_and_filter_documents)
 
-    parser = JsonOutputParser()
-
     chain = {"context" : filtered_docs | builder.format_docs,
             "question": RunnablePassthrough() } | RunnableLambda(lambda info: _route(
         options = chat_options,
         builder = builder,
-        context_info = info)) | parser
+        context_info = info))
 
     return chain
