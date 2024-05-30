@@ -8,6 +8,17 @@ This project depends on Azure resources. If you don't have an Azure account, you
 
 To use this codebase, you must have deployed an [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service/) instance, an [Azure Storage](https://azure.microsoft.com/en-us/products/storage/blobs/) account, and an [Azure AI Search](https://azure.microsoft.com/en-us/products/ai-services/ai-search/) instance.
 
+### Azure AI Search
+
+For the search, we need to enable hybrid search and create three different indices to demonstrate the features of this repo. Each index must be populated with a chunked dataset that has a metadata field with the following properties:
+
+<TODO: FILL>
+
+
+### Azure Storage
+
+For the storage account, we will use blob storage. In order to make the documents available to users of the app, we need to make documents in the blob container accessible to users of the application.
+
 ## Environment Configurations
 
 It is advised to use the preconfigured dev container to run this project. A docker container as a remote container in VSCode or a GitHub codespace should be sufficient.
