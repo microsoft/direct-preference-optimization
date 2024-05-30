@@ -35,10 +35,7 @@ class Answer:
         answer_query_config: Optional[AnswerQueryConfig] = None,
     ):
         self.formatted_answer = formatted_answer
-        if citations is None:
-            self.citations = []
-        else:
-            self.citations = citations
+        self.citations = [] if citations is None else citations
         self.query_generation_prompt = answer_query_config.query_generation_prompt
         self.query = answer_query_config.query
         self.query_result = answer_query_config.query_result
