@@ -93,13 +93,13 @@ class MultiIndexChatBuilder:
     def format_docs(self, docs):
         """Function to format the documents into a string, with the URL included for citations"""
         formatted_docs = ""
-        for d in docs:
+        for i, d in enumerate(docs):
             url = self._storage_account_options.url
             file_name = d[0].metadata["file_name"]
             container = d[0].metadata["container"]
 
             sas_token = self._token_service.get_sas_token_for_blob(file_name, container)
-            formatted_docs += f'TITLE: {file_name}\n'
+            formatted_docs += f'ID: {i}'
             formatted_docs += f'URL: {url}/{container}/{file_name}?{sas_token}'
             formatted_docs += f'CONTENT: {d[0].page_content}\n\n'
         return formatted_docs
