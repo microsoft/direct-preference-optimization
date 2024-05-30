@@ -31,9 +31,14 @@ class Answer:
     def __init__(
         self,
         formatted_answer: str = "",
+        citations: List[str] = None,
         answer_query_config: Optional[AnswerQueryConfig] = None,
     ):
         self.formatted_answer = formatted_answer
+        if citations is None:
+            self.citations = []
+        else:
+            self.citations = citations
         self.query_generation_prompt = answer_query_config.query_generation_prompt
         self.query = answer_query_config.query
         self.query_result = answer_query_config.query_result
@@ -42,6 +47,7 @@ def to_answer_item(answer: Answer):
     """Returns a formatted item for the answer."""
     answer_item = {
         "formatted_answer": answer.formatted_answer,
+        "citations": answer.citations,
         "query_generation_prompt": answer.query_generation_prompt,
         "query": answer.query,
         "query_result": answer.query_result,

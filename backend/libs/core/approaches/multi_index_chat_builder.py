@@ -99,6 +99,7 @@ class MultiIndexChatBuilder:
             container = d[0].metadata["container"]
 
             sas_token = self._token_service.get_sas_token_for_blob(file_name, container)
+            formatted_docs += f'TITLE: {file_name}\n'
             formatted_docs += f'URL: {url}/{container}/{file_name}?{sas_token}'
             formatted_docs += f'CONTENT: {d[0].page_content}\n\n'
         return formatted_docs
