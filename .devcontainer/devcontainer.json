@@ -16,7 +16,8 @@
 				"MS-CST-E.vscode-devskim",
 				"ms-azuretools.azure-dev",
 				"ms-azuretools.vscode-cosmosdb",
-				"ms-azuretools.vscode-azurecontainerapps"
+				"ms-azuretools.vscode-azurecontainerapps",
+				"ms-vscode.azurecli"
 			]
 		}
 	},
@@ -49,5 +50,8 @@
 			"onAutoForward": "openBrowser",
 			"protocol": "http"
 		}
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/azure-cli:1": {}
 	}
 }

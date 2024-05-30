@@ -29,7 +29,7 @@ def _multi_index_vector_store_from_settings(config: dict) -> MultiIndexVectorSto
 def _open_ai_options_from_settings(config: dict) -> OpenAIOptions:
     return OpenAIOptions(
         api_options=ApiOptions.from_settings(config),
-        model_options=ModelOptions.from_settings(config)
+        ai_model_options=ModelOptions.from_settings(config)
     )
 def _api_options_from_settings(config: dict) -> ApiOptions:
     return ApiOptions(
@@ -54,7 +54,7 @@ def _vector_store_options_from_settings(config: dict) -> VectorStoreOptions:
     )
 def _storage_account_options_from_settings(config: dict) -> StorageAccountOptions:
     return StorageAccountOptions(
-        url=config["STORAGE_ACCOUNT_URL"]
+        account_name=config["STORAGE_ACCOUNT_NAME"]
     )
 
 def load_config() -> dict:

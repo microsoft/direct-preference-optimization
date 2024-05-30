@@ -11,12 +11,13 @@ from langchain_core.prompts import (
     SystemMessagePromptTemplate,
 )
 
-from libs.core.models.options import MultiIndexVectorStoreOptions, VectorStoreOptions, OpenAIOptions, StorageAccountOptions
+from libs.core.models.options import MultiIndexVectorStoreOptions
 from libs.core.services.search_vector_index_service import (
     search,
     generate_azure_search_client,
     generate_embeddings
 )
+from libs.core.services.sas_token_service import SasTokenService
 
 class MultiIndexChatBuilder:
     """Class used to help build a dynamic chat conversation."""
@@ -29,12 +30,14 @@ class MultiIndexChatBuilder:
         self._vector_store_options = multi_index_options.vector_store_options
         self._open_ai_options = multi_index_options.open_ai_options
         self._storage_account_options = multi_index_options.storage_account_options
+        self._token_service = SasTokenService(multi_index_options.storage_account_options)
+
 
     def llm(self):
         """Creates and returns an instance of a LLM class."""
         open_ai_options = self._open_ai_options
         api_options = open_ai_options.api_options
-        model_options = open_ai_options.model_options
+        model_options = open_ai_options.ai_model_options
         return AzureChatOpenAI(
             openai_api_version=api_options.api_version,
             azure_deployment=model_options.deployment_model,
@@ -91,7 +94,12 @@ class MultiIndexChatBuilder:
         """Function to format the documents into a string, with the URL included for citations"""
         formatted_docs = ""
         for d in docs:
-            formatted_docs += f'URL: {self._storage_account_options.url}/{d[0].metadata["container"]}/{d[0].metadata["file_name"]}'
+            url = self._storage_account_options.url
+            file_name = d[0].metadata["file_name"]
+            container = d[0].metadata["container"]
+
+            sas_token = self._token_service.get_sas_token_for_blob(file_name, container)
+            formatted_docs += f'URL: {url}/{container}/{file_name}?{sas_token}'
             formatted_docs += f'CONTENT: {d[0].page_content}\n\n'
         return formatted_docs
 

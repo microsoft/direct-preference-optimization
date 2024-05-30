@@ -41,7 +41,7 @@ class OpenAIOptions(BaseSettings):
     Options for configuring the OpenAI service.
     """
     api_options: ApiOptions = Field()
-    model_options: ModelOptions = Field()
+    ai_model_options: ModelOptions = Field()
 
 class VectorStoreOptions(BaseSettings):
     """
@@ -63,7 +63,10 @@ class StorageAccountOptions(BaseSettings):
         url: The base url of the storage account.
     Note: The system expects that the container name will be returned with the document metadata.
     """
-    url: str = Field()
+    account_name: str = Field()
+    @property
+    def url(self):
+        return f"https://{self.account_name}.blob.core.windows.net"
 
 class MultiIndexVectorStoreOptions(BaseSettings):
     """Options for configuring the multi-index vector store service."""
