@@ -1,8 +1,10 @@
 """Main module for the FastAPI application."""
+import json
 from fastapi import FastAPI
 
 from models.rate_models import RateRequest
 from models.chat_request import ChatRequest
+from models.llm_response import LlmResponse
 from models.chat_response import (
     Answer,
     AnswerQueryConfig,
@@ -54,8 +56,12 @@ def conversation(chat_message: ChatRequest):
     )
 
     response = chain.invoke({"question": chat_message.dialog})
+    json_content = json.loads(response.content)
+    llm_response = LlmResponse(**json_content)
+
     chat_answer = Answer(
-        formatted_answer = response.content,
+        formatted_answer = llm_response.answer,
+        citations=llm_response.citations,
         answer_query_config = AnswerQueryConfig(
             query=chat_message.dialog,
             query_generation_prompt = None,
