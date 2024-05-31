@@ -7,7 +7,9 @@ chat_approach:
 
                   Remember, you must return both an answer and citations. A citation consists of a VERBATIM quote that
                   justifies the answer and the ID of the quote article. Return a citation for every quote across all articles
-                  that justify the answer. Use the following format for your final output:
+                  that justify the answer. 
+                  
+                  Use the following format for your final output for all responses even if there is no answer or citations:
 
                   {{
                       "answer": "The answer to the question.",
