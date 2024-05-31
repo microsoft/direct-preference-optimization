@@ -19,16 +19,12 @@ export function parseAnswerToHtml(chatResponse: ChatResponse, onCitationClicked:
 
     // trim any whitespace from the end of the answer after removing follow-up questions
     parsedAnswer = parsedAnswer.trim();
-
-    var fragments: string[] = [];
-    //const parts = chatResponse.classification == ApproachType.Unstructured ? parsedAnswer.split(/\{([^}]+)\}/g) : [parsedAnswer];
-    fragments = chatResponse.answer.citations.map((citation, index) => {
+    chatResponse.answer.citations.map((citation, index) => {
         citations.push(citation);
-        return parsedAnswer;
     });
 
     return {
-        answerHtml: fragments.join(""),
+        answerHtml: parsedAnswer,
         citations,
         followupQuestions
     };

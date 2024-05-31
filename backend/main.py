@@ -32,7 +32,7 @@ app = FastAPI()
 @app.post("/rate")
 def rate_response(rate_message: RateRequest):
     """API endpoint for rating the conversation."""
-    embeddings = generate_embeddings(multi_index_options.openai_options)
+    embeddings = generate_embeddings(multi_index_options.open_ai_options)
     client = generate_azure_search_client(
         index_name="ratings",
         vector_store_options=multi_index_options.vector_store_options,
