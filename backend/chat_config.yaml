@@ -9,7 +9,7 @@ chat_approach:
                   justifies the answer and the ID of the quote article. Return a citation for every quote across all articles
                   that justify the answer. 
                   
-                  Use the following format for your final output for all responses even if there is no answer or citations:
+                  Use the following format for your final output for all responses even if there is no answer:
 
                   {{
                       "answer": "The answer to the question.",
@@ -36,7 +36,7 @@ chat_approach:
 
   openai_settings:
     api_version: "2024-02-01"
-    deployment: "gpt-4-turbo"
+    deployment: "gpt-4o"
     embedding_model: "text-embedding-ada-002"
     temperature: 0.0
     max_tokens: 800
