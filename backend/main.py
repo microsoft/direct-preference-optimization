@@ -56,12 +56,10 @@ def conversation(chat_message: ChatRequest):
     )
 
     response = chain.invoke({"question": chat_message.dialog})
-    json_content = json.loads(response.content)
-    llm_response = LlmResponse(**json_content)
 
     chat_answer = Answer(
-        formatted_answer = llm_response.answer,
-        citations=llm_response.citations,
+        formatted_answer = response['answer'],
+        citations=response['citations'],
         answer_query_config = AnswerQueryConfig(
             query=chat_message.dialog,
             query_generation_prompt = None,

@@ -18,6 +18,7 @@ from libs.core.services.search_vector_index_service import (
     generate_embeddings
 )
 from libs.core.services.sas_token_service import SasTokenService
+from libs.core.models.cited_answer import CitedAnswer
 
 class MultiIndexChatBuilder:
     """Class used to help build a dynamic chat conversation."""
@@ -103,7 +104,8 @@ class MultiIndexChatBuilder:
             formatted_docs += f'URL: {url}/{container}/{file_name}?{sas_token}'
             formatted_docs += f'CONTENT: {d[0].page_content}\n\n'
         return formatted_docs
-
+    
     def default_return_message(self, default_return_message: str):
         """Function to return the default return message if no documents are found."""
-        return AIMessage(default_return_message)
+        cited_answer = CitedAnswer(answer = default_return_message, citations = [])
+        return cited_answer.__dict__
