@@ -59,13 +59,16 @@ class MultiIndexChatBuilder:
             ]
         )
 
-    def _get_documents(self, index_name: str, query: str):
+    def get_ratings(self, query: str):
+        return self._get_documents("ratings", query, 1)
+    
+    def _get_documents(self, index_name: str, query: str, number_of_results: int = 10):
         embedding = generate_embeddings(self._open_ai_options)
         client = generate_azure_search_client(
             index_name = index_name,
             vector_store_options = self._vector_store_options,
             embedding_function = embedding)
-        return search(client, query, 10)
+        return search(client, query, number_of_results)
 
     def get_primary_documents(self, question: str):
         """ Creating a new instance of the SearchVectorIndexService class with the 
@@ -87,7 +90,7 @@ class MultiIndexChatBuilder:
 
         # Reverse sorting the documents based on the reranked score.
         documents = sorted(documents, key=lambda document: document[2], reverse=True)
-        documents = documents[:3]
+        documents = documents[:1]
         return documents
 
     def format_docs(self, docs):
@@ -107,3 +110,7 @@ class MultiIndexChatBuilder:
     def default_return_message(self, default_return_message: str):
         """Function to return the default return message if no documents are found."""
         return AIMessage(default_return_message)
+    
+    def return_rated_message(self, document):
+        message = '{"answer": "' + document[0].page_content + '", "citations": []}'
+        return AIMessage(message)

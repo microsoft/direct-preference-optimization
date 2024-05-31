@@ -56,7 +56,7 @@ def conversation(chat_message: ChatRequest):
     )
 
     response = chain.invoke({"question": chat_message.dialog})
-    json_content = json.loads(response.content)
+    json_content = json.loads(response.content, strict=False)
     llm_response = LlmResponse(**json_content)
 
     chat_answer = Answer(
