@@ -32,7 +32,7 @@ app = FastAPI()
 @app.post("/rate")
 def rate_response(rate_message: RateRequest):
     """API endpoint for rating the conversation."""
-    embeddings = generate_embeddings(multi_index_options.openai_options)
+    embeddings = generate_embeddings(multi_index_options.open_ai_options)
     client = generate_azure_search_client(
         index_name="ratings",
         vector_store_options=multi_index_options.vector_store_options,
@@ -56,12 +56,10 @@ def conversation(chat_message: ChatRequest):
     )
 
     response = chain.invoke({"question": chat_message.dialog})
-    json_content = json.loads(response.content)
-    llm_response = LlmResponse(**json_content)
 
     chat_answer = Answer(
-        formatted_answer = llm_response.answer,
-        citations=llm_response.citations,
+        formatted_answer = response['answer'],
+        citations=response['citations'],
         answer_query_config = AnswerQueryConfig(
             query=chat_message.dialog,
             query_generation_prompt = None,

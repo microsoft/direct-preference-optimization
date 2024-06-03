@@ -6,24 +6,7 @@ chat_approach:
 
                   Remember, you must return both an answer and citations. A citation consists of a VERBATIM quote that
                   justifies the answer and the ID of the quote article. Return a citation for every quote across all articles
-                  that justify the answer. Use the following format for your final output:
-
-                  {{
-                      "answer": "The answer to the question.",
-                      "citations": [
-                          {{
-                              "id": "The ID of the source",
-                              "url": "The URL of the source.",
-                              "title": "A short title of the source."
-                          }},
-                          {{
-                              "id": "The ID of the source",
-                              "url": "The URL of the source.",
-                              "title": "A short title of the source."
-                          }},
-                          ...
-                      ]
-                  }}
+                  that justify the answer. 
 
                   {context}
   documents:
@@ -33,7 +16,7 @@ chat_approach:
 
   openai_settings:
     api_version: "2024-02-01"
-    deployment: "gpt-4-turbo"
+    deployment: "gpt-35-turbo-16k"
     embedding_model: "text-embedding-ada-002"
     temperature: 0.0
     max_tokens: 800
