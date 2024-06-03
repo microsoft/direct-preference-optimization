@@ -38,3 +38,6 @@ chat_approach:
     temperature: 0.0
     max_tokens: 800
     n: 1
+
+  storage_settings:
+    use_account_key: True

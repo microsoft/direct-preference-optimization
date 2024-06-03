@@ -64,6 +64,8 @@ class StorageAccountOptions(BaseSettings):
     Note: The system expects that the container name will be returned with the document metadata.
     """
     account_name: str = Field()
+    account_key: str = Field()
+    use_account_key: bool = Field()
     @property
     def url(self):
         return f"https://{self.account_name}.blob.core.windows.net"
