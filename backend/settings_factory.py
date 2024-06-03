@@ -54,7 +54,9 @@ def _vector_store_options_from_settings(config: dict) -> VectorStoreOptions:
     )
 def _storage_account_options_from_settings(config: dict) -> StorageAccountOptions:
     return StorageAccountOptions(
-        account_name=config["STORAGE_ACCOUNT_NAME"]
+        account_name=config["STORAGE_ACCOUNT_NAME"],
+        account_key=config["STORAGE_ACCOUNT_KEY"],
+        use_account_key=config["chat_approach"]["storage_settings"]["use_account_key"]
     )
 
 def load_config() -> dict:

@@ -13,12 +13,22 @@ class SasTokenService:
         self._blob_service_client: BlobServiceClient = None
         self._user_delegation_key: UserDelegationKey = None
 
+    def _create_blob_service_client(self):
+        """Create a BlobServiceClient based on the connection string."""
+        if self._storage_account_options.use_account_key:
+            connection_string = f"DefaultEndpointsProtocol=https;AccountName={self._storage_account_options.account_name};AccountKey={self._storage_account_options.account_key};EndpointSuffix=core.windows.net"
+            self._blob_service_client = BlobServiceClient.from_connection_string(
+                conn_str=connection_string)
+        else:
+            self._blob_service_client = BlobServiceClient(
+                self._storage_account_options.url,
+                credential=DefaultAzureCredential()
+            )
+
     def _get_user_delegation_key(self):
         """Get the user delegation key for the storage account."""
         if not self._blob_service_client:
-            self._blob_service_client = BlobServiceClient(
-                self._storage_account_options.url,
-                credential=DefaultAzureCredential())
+            self._create_blob_service_client()
 
         if not self._user_delegation_key or isoparse(self._user_delegation_key.signed_expiry) < datetime.now(timezone.utc):
             self._user_delegation_key = self._blob_service_client.get_user_delegation_key(
@@ -36,14 +46,26 @@ class SasTokenService:
     ):
         """Generates a SAS token for the given blob."""
 
+        if not self._blob_service_client:
+            self._create_blob_service_client()
 
-        sas_token = generate_blob_sas(
-            account_name=self._storage_account_options.account_name,
-            container_name=container_name,
-            blob_name=blob_name,
-            user_delegation_key=self._get_user_delegation_key(),
-            permission=BlobSasPermissions(read=True),
-            expiry=datetime.now(timezone.utc) + timedelta(seconds=expiry)
-        )
+        if self._storage_account_options.use_account_key:
+            sas_token = generate_blob_sas(
+                account_name=self._storage_account_options.account_name,
+                container_name=container_name,
+                blob_name=blob_name,
+                account_key=self._storage_account_options.account_key,
+                permission=BlobSasPermissions(read=True),
+                expiry=datetime.now(timezone.utc) + timedelta(seconds=expiry)
+            )
+        else:
+            sas_token = generate_blob_sas(
+                account_name=self._storage_account_options.account_name,
+                container_name=container_name,
+                blob_name=blob_name,
+                user_delegation_key=self._get_user_delegation_key(),
+                permission=BlobSasPermissions(read=True),
+                expiry=datetime.now(timezone.utc) + timedelta(seconds=expiry)
+            )
 
         return sas_token
